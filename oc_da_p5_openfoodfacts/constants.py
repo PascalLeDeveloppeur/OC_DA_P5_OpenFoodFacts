@@ -1,4 +1,6 @@
+BRANDS = "brands"
 BRAND_NAME_MAX_LENGTH = 25
+CATEGORIES = "categories"
 CATEGORIES_TO_BE_DELETED = [
     'Alkoholfreie Getränke',
     'Almond milks',
@@ -134,8 +136,8 @@ CATEGORIES_TO_BE_DELETED = [
     'fr:Biscuits au son de blé',
     'fr:Biscuits au son de blé et la figue',
     'fr:Pâtes à tartiner',
-    'fr:nocciolata',
-]
+    'fr:nocciolata']
+
 CATEGORY_NAME_MAX_LENGTH = 45
 INGREDIENTS_MAX_LENGTH = 300
 CHOOSE_A_CATEGORY = "CHOISISSEZ UNE CATÉGORIE"
@@ -151,15 +153,18 @@ INITIAL = "PAGE INITIALE"
 INITIAL_PAGE = -2
 MINIMAL_CATEGORY_LENGTH = 3
 NBR_OF_FIELDS_BY_PRODUCT = 6
+NUTRISCORE_MAX_LENGTH = 2
 PRIMARY_MENU = """
 Que souhaitez-vous faire ?
 [1] Substituer un aliment
 [2] Voir mes aliments de substitution"""
+PRODUCT = "product"
 PRODUCT_NAME_MAX_LENGTH = 55
 PRODUCTS_PER_PAGE = 20  # Il faudra le régler à 2000
 ROOT_BRANCH = -1
-SHOP_NAME_MAX_LENGTH = 45
+STORE_NAME_MAX_LENGTH = 35
 STARTER = "STARTER"
+STORES = "stores"
 SUBSTITUTE_PAGE = 101
 SUBSTITUTE = "SUBSTITUER UN PRODUIT"
 TRUNK_BRANCH = 0

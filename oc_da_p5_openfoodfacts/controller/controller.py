@@ -3,6 +3,7 @@ import sys
 
 from dotenv import load_dotenv
 from icecream import ic
+from unidecode import unidecode
 
 from controller.starter_controller import StarterController
 from controller.substitute_controller import SubstituteController
@@ -17,8 +18,7 @@ from constants import (
     ROOT_BRANCH,
     STARTER,
     SUBSTITUTE,
-    TRUNK_BRANCH,
-)
+    TRUNK_BRANCH)
 
 
 class Controller:
@@ -53,6 +53,9 @@ class Controller:
 
     def set_next_page_nbr(self, next_page):
         self.__next_page_nbr = next_page
+
+    def remove_accent(self, string):
+        return unidecode(string)
 
     def run(self):
         self.__view.initial_page(self.event_handler)
@@ -100,7 +103,7 @@ Je dois:
 2 - Créer la bdd ---------------------------------------------------Done
 3 - Récupérer des données de chez Open Food Facts
 4 - Filtrer les données
-5 - Raccourcir les noms trop longs (product, category, shop)
+5 - Raccourcir les noms trop longs (product, category, store)
 6 - Formater les données
 7 - Remplir la bdd
 8 - Aller à la page d'accueil

@@ -1,23 +1,27 @@
 import sys
 import time
+import traceback
 
+from sqlalchemy.exc import (
+    DBAPIError,
+    InterfaceError)
 from icecream import ic
+from pprint import pprint
 
 from db.db_creator import (
     Base,
+    Brand,
     Category,
     engine,
     Product,
-    # Shop,
-    )
+    Store)
 from model.data_downloader import DataDownloader
 from model.data_formatter import DataFormatter
 
 from constants import (
     DB_HAS_BEEN_CREATED,
     CREATE_DB_PAGE,
-    SUBSTITUTE_PAGE,
-)
+    SUBSTITUTE_PAGE)
 
 
 class RootController:
@@ -44,29 +48,68 @@ class RootController:
                           + " produits bruts ont été téléchargés")
 
                     print("Création de la base de données en cours...")
+                    print("Création des tables en cours...")
                     Base.metadata.create_all(engine)
                     print("Tables créées.")
 
                     print("Filtrage et formattage des données en cours...")
-                    prefiltered_products, categories, stores =\
-                        self.__data_formatter.format_data(
-                                    self.__rough_products)
+                    prefiltered_products = (self.__data_formatter
+                                            .prefilter_products(
+                                                self.__rough_products))
 
-                    # Fill database
+                    brands, categories, products, stores = (
+                        self.__data_formatter.format_products(
+                                        controller,
+                                        prefiltered_products))
+
+                    # Database feeding
                     print("Remplissage des tables en cours...")
+                    Brand.fill_database(brands)
+                    print(" - Table brand remplie.")
                     Category.fill_database(categories)
                     print(" - Table category remplie.")
-                    # Shop.fill_database(stores)
-                    # print(" - Table shop remplie")
-                    Product.fill_database(prefiltered_products,
+                    Store.fill_database(stores)
+                    print(" - Table store remplie.")
+                    Product.fill_database(products,
+                                          brands,
                                           categories,
                                           stores)
+                    print(" - Table product remplie.")
+                    print(" - Tables d'associations remplies.")
+                    print(len(self.__rough_products) - len(products),
+                          " produits ont été rejetés pour non-conformité.")
                     sys.exit(ic())
                     controller.set_next_page_nbr(DB_HAS_BEEN_CREATED)
+                # except DBAPIError: <= any database error
+                except InterfaceError:
+                    e_traceback = traceback.format_exc()
+                    print(e_traceback)
+                    print("**********************************************")
+                    print("Error!")
+                    print("Unable to drop nor create the database")
+                    print("Maybe the database server did not start")
+                    print("or the connection elements are not correct.")
+                    print("**********************************************")
+                    time.sleep(2)
+                    sys.exit(ic())
+                except DBAPIError:
+                    e_traceback = traceback.format_exc()
+                    print(e_traceback)
+                    print("**********************************************")
+                    print("Error!")
+                    print("Unable to drop nor create the database")
+                    print("Something went wrong with the database.")
+                    print("**********************************************")
+                    time.sleep(2)
+                    sys.exit(ic())
                 except Exception as e:
+                    e_traceback = traceback.format_exc()
+                    print(e_traceback)
+                    print("**********************************************")
                     print("Unable to drop nor create the database")
                     print(str(e))
-                    time.sleep(10)
+                    print("**********************************************")
+                    time.sleep(2)
                     sys.exit(ic())
 
 # request.requestexception

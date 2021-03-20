@@ -1,3 +1,6 @@
-product = {
-    "product_name": "Royal Soda",
-    "categories": ["Boisson", "Boisson sucrée", "Soda"]}
+from unidecode import unidecode
+
+string = "Pépé le français"
+unidecode_name = unidecode(string)
+
+print(unidecode_name)

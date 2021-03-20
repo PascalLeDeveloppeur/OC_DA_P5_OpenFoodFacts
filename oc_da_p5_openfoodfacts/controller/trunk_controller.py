@@ -3,8 +3,7 @@ import sys
 from constants import (
     FAVORITES_PAGE,
     HOME_PAGE,
-    SUBSTITUTE_PAGE,
-)
+    SUBSTITUTE_PAGE)
 
 
 class TrunkController:

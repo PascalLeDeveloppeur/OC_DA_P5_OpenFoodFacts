@@ -1,6 +1,5 @@
 from constants import (
-    HOME_PAGE,
-)
+    HOME_PAGE)
 
 
 class FavoritesController:

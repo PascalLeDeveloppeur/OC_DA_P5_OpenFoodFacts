@@ -1,8 +1,7 @@
 from constants import (
     DATABASE_CREATED,
     DB_HAS_BEEN_CREATED,
-    ROOT_BRANCH,
-)
+    ROOT_BRANCH)
 
 
 class DbCreatedPageView:

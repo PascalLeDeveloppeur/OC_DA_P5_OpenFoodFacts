@@ -5,8 +5,7 @@ from constants import (
     DB_HAS_BEEN_CREATED,
     HOME_PAGE,
     INITIAL_PAGE,
-    SUBSTITUTE_PAGE,
-)
+    SUBSTITUTE_PAGE)
 
 
 class Router:

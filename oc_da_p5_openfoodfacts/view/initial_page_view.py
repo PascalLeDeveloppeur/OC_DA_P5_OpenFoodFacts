@@ -3,8 +3,7 @@ import sys
 from constants import (
     STARTER,
     INITIAL_PAGE,
-    INITIAL,
-)
+    INITIAL)
 
 
 class InitialPageView:

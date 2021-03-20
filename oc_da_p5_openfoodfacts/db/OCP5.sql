@@ -61,33 +61,33 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_shop`
+-- Table `OCP5`.`P5_store`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_shop` (
+CREATE TABLE IF NOT EXISTS `OCP5`.`P5_store` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `shop_name` VARCHAR(45) NULL,
+  `store_name` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_shop_has_product`
+-- Table `OCP5`.`P5_store_has_product`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_shop_has_product` (
+CREATE TABLE IF NOT EXISTS `OCP5`.`P5_store_has_product` (
   `P5_products_id` INT NOT NULL,
-  `P5_shop_id` INT NOT NULL,
-  PRIMARY KEY (`P5_products_id`, `P5_shop_id`),
-  INDEX `fk_P5_products_has_P5_shop_P5_shop1_idx` (`P5_shop_id` ASC) VISIBLE,
-  INDEX `fk_P5_products_has_P5_shop_P5_products1_idx` (`P5_products_id` ASC) VISIBLE,
-  CONSTRAINT `fk_P5_products_has_P5_shop_P5_products1`
+  `P5_store_id` INT NOT NULL,
+  PRIMARY KEY (`P5_products_id`, `P5_store_id`),
+  INDEX `fk_P5_products_has_P5_store_P5_store1_idx` (`P5_store_id` ASC) VISIBLE,
+  INDEX `fk_P5_products_has_P5_store_P5_products1_idx` (`P5_products_id` ASC) VISIBLE,
+  CONSTRAINT `fk_P5_products_has_P5_store_P5_products1`
     FOREIGN KEY (`P5_products_id`)
     REFERENCES `mydb`.`P5_product` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_P5_products_has_P5_shop_P5_shop1`
-    FOREIGN KEY (`P5_shop_id`)
-    REFERENCES `mydb`.`P5_shop` (`id`)
+  CONSTRAINT `fk_P5_products_has_P5_store_P5_store1`
+    FOREIGN KEY (`P5_store_id`)
+    REFERENCES `mydb`.`P5_store` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

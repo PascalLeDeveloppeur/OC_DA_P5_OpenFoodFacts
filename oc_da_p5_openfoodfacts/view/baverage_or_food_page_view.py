@@ -3,8 +3,7 @@ import sys
 from constants import (
     CHOOSE_A_CATEGORY,
     SUBSTITUTE,
-    SUBSTITUTE_PAGE,
-)
+    SUBSTITUTE_PAGE)
 
 
 class BaverageOrFoodPageView:

@@ -1,17 +1,23 @@
 import sys
 from pprint import pprint
 
+from sqlalchemy.sql import elements
+
 from icecream import ic
 
 from constants import (
+    BRANDS,
+    BRAND_NAME_MAX_LENGTH,
+    CATEGORIES,
     CATEGORIES_TO_BE_DELETED,
     CATEGORY_NAME_MAX_LENGTH,
     INGREDIENTS_MAX_LENGTH,
     MINIMAL_CATEGORY_LENGTH,
     NBR_OF_FIELDS_BY_PRODUCT,
+    PRODUCT,
     PRODUCT_NAME_MAX_LENGTH,
-    SHOP_NAME_MAX_LENGTH,
-    )
+    STORES,
+    STORE_NAME_MAX_LENGTH)
 
 
 class DataFormatter:
@@ -20,21 +26,7 @@ class DataFormatter:
     def __init__(self):
         pass
 
-    def format_data(self, products):
-        (prefiltered_products,
-         categories,
-         stores) = self.filter_data(products)
-
-        for product in prefiltered_products:
-            if len(product.get("product_name")) > PRODUCT_NAME_MAX_LENGTH:
-                product["product_name"] =\
-                    product["product_name"][:PRODUCT_NAME_MAX_LENGTH]
-
-            ingredients = self.format_ingredients(product)
-            product['ingredients'] = ingredients
-        return prefiltered_products, categories, stores
-
-    def filter_data(self, data):
+    def filter_data(self, rough_products):
         """
 Removal of non-compliant products.
         """
@@ -42,21 +34,22 @@ Removal of non-compliant products.
         print("Filtrage en cours")
 
         filtered_products, categories =\
-            self.filter_products_n_get_categories_from_products(data)
+            self.filter_products_n_get_categories_from_products(rough_products)
         stores = self.get_stores_from_products(filtered_products)
 
         return filtered_products, categories, stores
 
-    def filter_products_n_get_categories_from_products(self, data):
+    def filter_products_n_get_categories_from_products(self, rough_products):
         """
-Get categories from products that have benn received from Open Food Facts"""
+Get categories from products that have been received from Open Food Facts"""
         prefiltered_products = []
         categories_set = set()
-        for rough_product in data:
+        for rough_product in rough_products:
             if len(rough_product) == NBR_OF_FIELDS_BY_PRODUCT:
                 categories_str = rough_product.get('categories')
 
                 categories_to_add = categories_str.split(",")
+                rough_product['categories'] = categories_to_add
                 for category in categories_to_add:
                     category = category.strip(" ,")
                     if category and len(category) >= MINIMAL_CATEGORY_LENGTH:
@@ -73,22 +66,118 @@ Get categories from products that have benn received from Open Food Facts"""
         categories_set = set(categories_list)
         return prefiltered_products, categories_set
 
-    def get_stores_from_products(self, data):
+    def prefilter_products(self, products):
         """
-Get stores from products that have benn received from Open Food Facts"""
+En: Removes products that do not have all the required fields.
+Fr: Supprime les produits qui n'ont pas tous les champs requis."""
 
-        stores_set = set()
-        for rough_product in data:
-            stores_str = rough_product.get('stores')
+        in_conformity_products = []
+        for product in products:
+            product = self.check_if_required_fields_in_product(product)
+            if product:
+                in_conformity_products.append(product)
+        return in_conformity_products
 
-            stores_to_add = stores_str.split(",")
-            for store in stores_to_add:
-                store = store.strip(" ,")
-                store = store.title()
-                if len(store) > SHOP_NAME_MAX_LENGTH:
-                    store = store[:SHOP_NAME_MAX_LENGTH]
-                stores_set.add(store)
-        return stores_set
+    def check_if_required_fields_in_product(self, product):
+        if not product.get("categories"):
+            return []
+        if not product.get("brands"):
+            return []
+        if not product.get("product_name"):
+            return []
+        return product
+
+    def format_products(self, controller, products):
+        """
+En: Formats products to optimize their utilization.
+Fr: Formate les produits de façon à optimiser leur exploitation."""
+
+        brands = set()
+        categories = set()
+        stores = set()
+        for product in products:
+            product = self.format_lists_in_product(controller, product)
+
+            product["product_name"] = self.format_element(
+                                    controller,
+                                    product["product_name"],
+                                    PRODUCT)[:PRODUCT_NAME_MAX_LENGTH]
+
+            product["ingredients"] = self.format_ingredients(
+                                    product)[:INGREDIENTS_MAX_LENGTH]
+
+            self.add_to_set(controller,
+                            product["categories"],
+                            categories,
+                            CATEGORY_NAME_MAX_LENGTH)
+
+            self.add_to_set(controller,
+                            product["brands"],
+                            brands,
+                            BRAND_NAME_MAX_LENGTH)
+
+            self.add_to_set(controller,
+                            product["stores"],
+                            stores,
+                            STORE_NAME_MAX_LENGTH)
+
+        return brands, categories, products, stores
+
+    def format_lists_in_product(self, controller, product):
+        """
+En: Reformats the different lists of each product.
+Fr: Reformate les différentes listes de chaque produit."""
+
+        product["categories"] = self.str_to_list(
+            controller,
+            product["categories"],
+            CATEGORIES,
+            CATEGORY_NAME_MAX_LENGTH)
+
+        product["stores"] = self.str_to_list(
+            controller,
+            product["stores"],
+            STORES,
+            STORE_NAME_MAX_LENGTH)
+
+        product["brands"] = self.str_to_list(
+            controller,
+            product["brands"],
+            BRANDS,
+            BRAND_NAME_MAX_LENGTH)
+
+        return product
+
+    def str_to_list(self,
+                    controller,
+                    data_str,
+                    data_name,
+                    max_length_of_element_in_data):
+        """
+En: Transforms a list that is in string form into a standard list structure.
+    Each element of the list does not exceed the maximum size allowed in the
+    argument.
+Fr: Transforme une liste qui est sous forme de chaîne de caractères en liste
+standard.
+    Chaque élément de la liste ne dépasse pas la taille maximale autorisée
+    en argument."""
+
+        filtered_data_list = []
+        data_list = data_str.split(",")
+        for element in data_list:
+            element = element.strip(" ,")[:max_length_of_element_in_data]
+            element = self.format_element(controller, element, data_name)
+            filtered_data_list.append(element)
+        return filtered_data_list
+
+    def format_element(self, controller, element, data_name):
+        """
+En: Format the name of the element.
+Fr: Formate le nom de l'élément."""
+
+        element = element.title()
+        element = controller.remove_accent(element)
+        return element
 
     def format_ingredients(self, product):
         ingredients = product.get("ingredients")
@@ -117,3 +206,15 @@ Get stores from products that have benn received from Open Food Facts"""
         if len(ingredients_str) > INGREDIENTS_MAX_LENGTH:
             ingredients_str = ingredients_str[:INGREDIENTS_MAX_LENGTH]
         return ingredients_str
+
+    def add_to_set(self,
+                   controller,
+                   data_origin,
+                   data_set_destination,
+                   data_max_length):
+        """
+En: Format and add each element to the set.
+Fr: Formate puis ajoute chaque élément au set."""
+        for data in data_origin:
+            data = controller.remove_accent(data)
+            data_set_destination.add(data[:data_max_length])

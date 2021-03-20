@@ -3,8 +3,7 @@ import sys
 from constants import (
     CREATE_DB_PAGE,
     HOME_PAGE,
-    INITIAL_PAGE,
-)
+    INITIAL_PAGE)
 
 
 class StarterController:

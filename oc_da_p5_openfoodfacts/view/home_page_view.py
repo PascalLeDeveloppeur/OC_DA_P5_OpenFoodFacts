@@ -1,8 +1,7 @@
 from constants import (
     HOME,
     HOME_PAGE,
-    TRUNK_BRANCH,
-)
+    TRUNK_BRANCH)
 
 
 class HomePageView:
