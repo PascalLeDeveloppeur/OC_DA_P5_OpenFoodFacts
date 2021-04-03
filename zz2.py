@@ -1,6 +1,6 @@
-from unidecode import unidecode
+l1 = ["a", "b", "c", "d", "e", "f"]
+l2 = ["b", "c", "e"]
 
-string = "Pépé le français"
-unidecode_name = unidecode(string)
-
-print(unidecode_name)
+l1 = [elt for elt in l1 if elt not in l2]
+# l1 = ['a', 'd', 'f']
+print(l1)
