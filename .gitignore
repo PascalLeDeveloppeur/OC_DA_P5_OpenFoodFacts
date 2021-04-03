@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# perso
+zz1.py
+zz2.py
+zz3.py
