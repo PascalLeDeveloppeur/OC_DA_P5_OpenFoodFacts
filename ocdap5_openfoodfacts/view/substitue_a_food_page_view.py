@@ -11,8 +11,8 @@ class SubstitueAFoodPageView:
     def __init__(self):
         pass
 
-    def show(self, event_handler, print_title, menu_header):
-        print_title(CHOOSE_A_CATEGORY)
+    def show(self, event_handler, clear_and_print_title, menu_header):
+        clear_and_print_title(CHOOSE_A_CATEGORY)
         
         choice = input(f"""
 Que souhaitez-vous faire ?
@@ -22,6 +22,6 @@ Que souhaitez-vous faire ?
 :""")
         try:
             choice = int(choice)
-            event_handler(SUBSTITUTE, "BEVERAGE_OR_FOOD", choice)
+            event_handler(SUBSTITUTE, "BEVERAGES", choice)
         except Exception:
-            self.show(event_handler, print_title)
+            self.show(event_handler, clear_and_print_title)

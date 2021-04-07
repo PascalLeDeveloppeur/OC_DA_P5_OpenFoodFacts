@@ -1,5 +1,6 @@
 import os
 import sys
+from sqlalchemy.sql import elements
 
 from unidecode import unidecode
 from icecream import ic
@@ -16,14 +17,14 @@ from sqlalchemy import (
     Table)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.sql.expression import false, true
+from sqlalchemy.sql.expression import true, and_
 
 from constants import (
     BEVERAGES,
     BRAND_NAME_MAX_LENGTH,
     CATEGORY_NAME_MAX_LENGTH,
-    FOOD,
     INGREDIENTS_MAX_LENGTH,
+    LIST_OF_BEVERAGES_THAT_ARE_FOOD_TOO,
     NUTRISCORE_MAX_LENGTH,
     PRODUCT_NAME_MAX_LENGTH,
     STORE_NAME_MAX_LENGTH)
@@ -112,7 +113,8 @@ class Category(Base):
         secondary=l_category_and_product,
         back_populates="list_of_categories",
         cascade="all, delete",
-        passive_deletes=True)
+        passive_deletes=True,
+        lazy='joined')
 
     @classmethod
     def fill_database(cls, categories):
@@ -178,6 +180,18 @@ class Category(Base):
         food_list.sort()
         return food_list
 
+    @classmethod
+    def set_beverages_that_are_food_too(self):
+        for dual_cat in LIST_OF_BEVERAGES_THAT_ARE_FOOD_TOO:
+            beverages_that_are_food = (
+                session.query(Category)
+                .filter(Category.category_name.like(f"{dual_cat}%"))
+                .all())
+            for category in beverages_that_are_food:
+                category.is_beverage = True
+                category.is_food = True
+            session.commit()
+
 
 class Store(Base):
     __tablename__ = 'store'
@@ -215,7 +229,8 @@ class Product(Base):
         secondary=l_category_and_product,
         back_populates="list_of_products",
         cascade="all, delete",
-        passive_deletes=True)
+        passive_deletes=True,
+        lazy='joined')
 
     # List of stores where the product can be found
     list_of_stores = relationship(
@@ -339,3 +354,23 @@ class Product(Base):
             for category in categories_list:
                 categories.add(category.category_name)
         return categories
+
+    @classmethod
+    def get_products_from_subcategory(cls, main_category, subcategory):
+        subcategory_prods = main_category_prods = []
+        category_obj = (
+            session.query(Category)
+            .filter(Category.category_name == subcategory)
+            .one_or_none())
+        if category_obj:
+            subcategory_prods = category_obj.list_of_products
+
+        beverages_cat = (session.query(Category)
+                         .filter(Category
+                                 .category_name == main_category)
+                         .one_or_none())
+        if beverages_cat:
+            main_category_prods = beverages_cat.list_of_products
+
+        return {
+            prod for prod in subcategory_prods if prod in main_category_prods}

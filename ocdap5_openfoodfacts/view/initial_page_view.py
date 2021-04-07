@@ -12,8 +12,8 @@ class InitialPageView:
     def __init__(self):
         pass
 
-    def show(self, event_handler, print_title):
-        print_title(INITIAL)
+    def show(self, event_handler, clear_and_print_title):
+        clear_and_print_title(INITIAL)
         choice = input("""
 Que souhaitez-vous faire ?
 
@@ -25,4 +25,4 @@ Que souhaitez-vous faire ?
             choice = int(choice)
             event_handler(STARTER, INITIAL_PAGE, choice)
         except Exception:
-            self.show(event_handler, print_title)
+            self.show(event_handler, clear_and_print_title)
