@@ -24,8 +24,7 @@ class GetProdFromASubcatPageView:
 
     def show(
             self,
-            subcategory_name,
-            products,
+            memory,
             event_handler,
             clear_and_print_title,
             menu_header,
@@ -34,7 +33,7 @@ class GetProdFromASubcatPageView:
 
         clear_and_print_title(CHOOSE_A_PRODUCT)
         print()
-        print(subcategory_name)
+        print(memory["subcategory_name"])
 
         print(
             f"""
@@ -45,6 +44,7 @@ Ou choisir un produit ?
         is_next_prod_displayed = False
         is_previous_prod_displayed = False
 
+        products = memory["list_of_products"]
         for i, product_obj in enumerate(
             products[get_beverage_prod_index:(
                     get_beverage_prod_index + NBR_OF_PRODUCTS)]):
@@ -78,8 +78,7 @@ Ou choisir un produit ?
             event_handler(
                 SUBSTITUTE,
                 GET_PROD_FROM_A_SUBCAT_PAGE,
-                choice,
-                get_beverage_prod_index)
+                choice)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""

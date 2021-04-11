@@ -5,7 +5,7 @@ from constants import (
     SUBSTITUTE)
 
 
-class SubstitueAFoodPageView:
+class SubstituteAFoodPageView:
     """Display the << baverage or food >> page"""
 
     def __init__(self):

@@ -11,7 +11,9 @@ from sqlalchemy import (
     Boolean,
     Column,
     create_engine,
+    desc,
     ForeignKey,
+    func,
     Integer,
     String,
     Table)
@@ -25,7 +27,7 @@ from constants import (
     CATEGORY_NAME_MAX_LENGTH,
     INGREDIENTS_MAX_LENGTH,
     LIST_OF_BEVERAGES_THAT_ARE_FOOD_TOO,
-    NUTRISCORE_MAX_LENGTH,
+    MAX_PRODS_DISPLAYED,
     PRODUCT_NAME_MAX_LENGTH,
     STORE_NAME_MAX_LENGTH)
 
@@ -90,6 +92,12 @@ class Brand(Base):
         cascade="all, delete",
         passive_deletes=True)
 
+    def __str__(self):
+        return self.brand_name.title()
+
+    def __repr__(self):
+        return self.brand_name.title()
+
     @classmethod
     def fill_database(cls, brands):
         for brand in brands:
@@ -116,6 +124,8 @@ class Category(Base):
         passive_deletes=True,
         lazy='joined')
 
+    def __str__(self):
+        return self.category_name.title()
     @classmethod
     def fill_database(cls, categories):
         for category in categories:
@@ -208,6 +218,12 @@ class Store(Base):
         cascade="all, delete",
         passive_deletes=True)
 
+    def __str__(self):
+        return self.store_name.title()
+
+    def __repr__(self):
+        return self.store_name.title()
+
     @classmethod
     def fill_database(cls, stores):
         for store in stores:
@@ -265,6 +281,9 @@ class Product(Base):
         .substitute_prod_id,
         backref='all_originals'
     )
+
+    def __str__(self):
+        return self.product_name.title()
 
     @classmethod
     def fill_database(cls, products, brands, categories, stores):
@@ -341,6 +360,8 @@ class Product(Base):
     @classmethod
     def add_favorite(cls, original_prod, substitute_prod):
         substitute_prod.all_originals.append(original_prod)
+        session.add(substitute_prod)
+        session.commit()
 
     @classmethod
     def get_favorites_of(cls, original_prod):
@@ -374,3 +395,26 @@ class Product(Base):
 
         return {
             prod for prod in subcategory_prods if prod in main_category_prods}
+
+    @classmethod
+    def get_better_prods(self, product):
+
+        cats_of_the_chosen_product = product.list_of_categories
+        categories_names = [
+            category.category_name for category in cats_of_the_chosen_product]
+        # One pair (product, weight) = product + list of categories in
+        # common with the selected product
+        list_of_pairs = (
+            session.query(
+                Product, func.count(Product.id).label('category_count')
+            )
+            .join(Product.list_of_categories)
+            .filter(Category.category_name.in_(categories_names))
+            .group_by(Product)
+            .order_by(desc('category_count'),
+                      Product.nutriscore,
+                      Product.product_name)
+            .limit(MAX_PRODS_DISPLAYED)
+            .all())
+
+        return list_of_pairs

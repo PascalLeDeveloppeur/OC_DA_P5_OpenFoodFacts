@@ -45,6 +45,8 @@ class Controller:
         self.__beverages_subcategories = set()
         self.__food_subcategories = set()
         self.__list_of_prods = None
+        self.__subcategory = None
+        self.__product = None
         self.__router = Router()
         self.__view = View()
         self.__starter_controller = StarterController()
@@ -52,12 +54,30 @@ class Controller:
         self.__favorites_controller = FavoritesController()
         self.__trunk_controller = TrunkController()
         self.__root_controller = RootController()
+        self.memory = {"best_products": None,
+                       "fav_prod": None,
+                       "list_of_products": None,
+                       "product": None,
+                       "subcategory_name": None,
+                       "substitute_product": None}
 
     def get_list_of_prods(self):
         return self.__list_of_prods
 
     def set_list_of_prods(self, list_of_prods):
         self.__list_of_prods = list_of_prods
+
+    def get_product(self):
+        return self.__product
+
+    def set_product(self, product):
+        self.__product = product
+
+    def get_subcategory(self):
+        return self.__subcategory
+
+    def set_subcategory(self, subcategory):
+        self.__subcategory = subcategory
 
     def get_view(self):
         return self.__view
@@ -99,7 +119,6 @@ class Controller:
         self.__view.initial_page(self.event_handler)
 
     def event_handler(self, branch_nbr, page_nbr, choice, *args):
-        elt = {}
         if branch_nbr == FAVORITES:
             self.__favorites_controller.analyze(self,
                                                 page_nbr,
@@ -116,9 +135,8 @@ class Controller:
                                               choice,
                                               *args)
         elif branch_nbr == SUBSTITUTE:
-            elt["subcategory_of_beverage"] = (
-                self.__substitute_controller.analyze(
-                        self, page_nbr, choice, *args))
+            self.__substitute_controller.analyze(
+                self, page_nbr, choice, *args)
 
         elif branch_nbr == TRUNK_BRANCH:
             self.__trunk_controller.analyze(self,
@@ -128,14 +146,20 @@ class Controller:
         else:
             self.home_page()
 
-        self.__router.go_to(self, elt)
+        self.__router.go_to(self)
 
     def go_to_previous_page(self, **kwargs):
         print("page: ", self.__next_page_nbr)
         self.__next_page_nbr = self.__next_page_nbr - 1
         print("page: ", self.__next_page_nbr)
-        time.sleep(5)
+        time.sleep(2)
         self.__router.go_to(self, **kwargs)
+
+    def get_categories_from(self, element):
+        return Category.extract_beverage_category(self)
+
+    def is_empty(self, items_list):
+        return not items_list
 
     def manage_menu_header(self, choice):
         if choice == 1:
@@ -166,34 +190,32 @@ class Controller:
         self.__view.home_page(self.event_handler)
 
     def substitute_a_food(self, **kwargs):
-        self.__view.substitue_a_food_page(self.event_handler)
+        self.__view.substitute_a_food_page(self.event_handler)
         logger.info("Branche substituer un aliment page 1")
         sys.exit()
 
     def substitute_a_beverage(self, **kwargs):
-        logger.info(ic())
-        time.sleep(3)
-        self.__view.substitue_a_beverage_page(self.__beverages_subcategories,
-                                              self.event_handler)
+        time.sleep(2)
+        self.__view.substitute_a_beverage_page(self.memory,
+                                               self.__beverages_subcategories,
+                                               self.event_handler)
 
-    def get_prod_from_a_subcat(self, subcategory_of_beverage):
-        self.__list_of_prods = list(
+    def get_prod_from_a_subcat(self):
+        self.memory['list_of_products'] = list(
             Product.get_products_from_subcategory(
                 BEVERAGES,
-                subcategory_of_beverage))
+                self.memory["subcategory_name"]))
 
         self.__view.get_prod_from_a_subcat_page(
-            subcategory_of_beverage,
-            self.__list_of_prods,
+            self.memory,
             self.event_handler)
 
-    def details_of_a_beverage_prod(self, product):
+    def details_of_a_beverage_prod(self):
         self.__view.details_of_a_beverage_prod_page(
-            product,
+            self.memory,
             self.event_handler)
 
-    def get_categories_from(self, element):
-        return Category.extract_beverage_category(self)
-
-    def is_empty(self, items_list):
-        return not items_list
+    def get_a_better_beverage(self):
+        self.__view.get_a_better_beverage(
+            self.memory,
+            self.event_handler)

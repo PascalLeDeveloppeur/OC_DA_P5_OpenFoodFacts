@@ -97,7 +97,7 @@ class RootController:
                     logger.info(
                         "Sous-catégories de [Boissons]"
                         + "et [Aliments]récupérées")
-                    time.sleep(3)
+                    time.sleep(2)
                     controller.set_next_page_nbr(DB_HAS_BEEN_CREATED)
                 except InterfaceError:  # Unable to connect to the database
                     e_traceback = traceback.format_exc()

@@ -15,7 +15,7 @@ from constants import (
     SUBSTITUTE_A_BEVERAGE_PAGE)
 
 
-class SubstitueABeveragePageView:
+class SubstituteABeveragePageView:
     """Display the << subcategories of beverages >> page"""
 
     def __init__(self):
@@ -23,6 +23,7 @@ class SubstitueABeveragePageView:
 
     def show(
             self,
+            memory,
             controller_beverage_categories,
             event_handler,
             clear_and_print_title,
@@ -69,8 +70,7 @@ Ou choisir une catégorie ?
             event_handler(
                 SUBSTITUTE,
                 SUBSTITUTE_A_BEVERAGE_PAGE,
-                choice,
-                get_beverage_cat_index)
+                choice)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""

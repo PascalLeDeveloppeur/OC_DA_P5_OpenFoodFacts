@@ -2,10 +2,12 @@ import sys
 
 from icecream import ic
 
+from logger import logger
 from constants import (
     CREATE_DB_PAGE,
     DB_HAS_BEEN_CREATED,
     DETAILS_OF_A_BEVERAGE_PROD_PAGE,
+    GET_A_BETTER_BEVERAGE_PAGE,
     GET_PROD_FROM_A_SUBCAT_PAGE,
     HOME_PAGE,
     INITIAL_PAGE,
@@ -19,7 +21,7 @@ class Router:
     def __init__(self):
         pass
 
-    def go_to(self, controller, elt={}):
+    def go_to(self, controller):
         next_page = controller.get_next_page()
 
         # Branch: starter
@@ -34,11 +36,11 @@ class Router:
         elif next_page == SUBSTITUTE_A_BEVERAGE_PAGE:
             controller.substitute_a_beverage()
         elif next_page == GET_PROD_FROM_A_SUBCAT_PAGE:
-            controller.get_prod_from_a_subcat(
-                elt.get("subcategory_of_beverage"))
+            controller.get_prod_from_a_subcat()
         elif next_page == DETAILS_OF_A_BEVERAGE_PROD_PAGE:
-            controller.details_of_a_beverage_prod(
-                elt.get("subcategory_of_beverage"))
+            controller.details_of_a_beverage_prod()
+        elif next_page == GET_A_BETTER_BEVERAGE_PAGE:
+            controller.get_a_better_beverage()
 
         # Branch: Substitute a food
         elif next_page == SUBSTITUTE_A_FOOD:
