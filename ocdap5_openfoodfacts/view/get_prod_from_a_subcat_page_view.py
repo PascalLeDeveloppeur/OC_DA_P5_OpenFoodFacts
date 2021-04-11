@@ -52,7 +52,7 @@ Ou choisir un produit ?
             index_of_product = (
                 i + get_beverage_prod_index + INDEX_OF_FIRST_PROD)
 
-            print(f"[{index_of_product}] {product_obj.product_name} Marque: "
+            print(f"[{index_of_product}] {product_obj.product_name} | Marque: "
                   + str([brand.brand_name
                          for brand in product_obj.list_of_brands]))
         print()

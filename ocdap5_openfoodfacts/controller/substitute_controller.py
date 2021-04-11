@@ -67,7 +67,9 @@ class SubstituteController:
             controller.manage_menu_header(choice)
             if choice == LOOK_FOR_A_BETTER_PRODUCT:
                 controller.memory["best_products"] = (
-                    Product.get_better_prods(controller.memory["product"]))
+                    Product.get_better_prods(
+                        controller.memory["product"],
+                        controller.memory["subcategory_name"]))
                 controller.set_next_page_nbr(GET_A_BETTER_BEVERAGE_PAGE)
 
         elif page_nbr == GET_A_BETTER_BEVERAGE_PAGE:

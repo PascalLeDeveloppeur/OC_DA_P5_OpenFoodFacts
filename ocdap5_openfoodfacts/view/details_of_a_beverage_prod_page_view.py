@@ -30,9 +30,11 @@ class DetailsOfABeverageProdPageView:
         print(subcategory_name)
         print()
         print(product.product_name, end=" ")
-        print(str([brand.brand_name for brand in product.list_of_brands]))
+        print(" | Nutriscore: ", product.nutriscore, end=" | Marque: ")
+        # Below, str form is possible because of __repr__ in Product class
+        print(product.list_of_brands)
         print()
-        print(f"Ingrédients: {product.ingredients}")
+        print("Ingrédients: ", product.ingredients)
         print("Lieu(x) de ventes:", end=" ")
         list_of_stores = ", ".join(
             store.store_name for store in product.list_of_stores)

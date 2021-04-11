@@ -32,24 +32,28 @@ class GetABetterBeveragePageView:
         print(subcategory_name)
         print()
         print("Produit à remplacer: ", product.product_name, end=" ")
-        print(str([brand.brand_name for brand in product.list_of_brands]))
+        print(" | Nutriscore: ", product.nutriscore, end=" | Marque: ")
+        # Below, str form is possible because of __repr__ in Product class
+        print(product.list_of_brands)
         print()
 
-        print(
-            f"""
-Que souhaitez-vous faire ?
-{menu_header}
-Ou Ajouter un produit en favori
-""")
-        for i, pair in enumerate(best_products):
-            product = pair[0]
-            print(f"[{INDEX_OF_FIRST_PROD + i}] {product}", end=" | ")
-            print(f"Nutriscore: {product.nutriscore}", end=" | ")
-            print(f"Marque: {product.list_of_brands}")
-            print(f"            Ingrédients: {product.ingredients}")
-            print(f"            Lieux de vente: {product.list_of_stores}")
-            print("_______________________________")
+        print("Que souhaitez-vous faire ?")
+        print(f"{menu_header}")
+        if best_products:
+            print("Ou Ajouter un produit en favori ?")
             print()
+            for i, pair in enumerate(best_products):
+                product = pair[0]
+                print(f"[{INDEX_OF_FIRST_PROD + i}] {product}", end=" | ")
+                print(f"Nutriscore: {product.nutriscore}", end=" | ")
+                print(f"Marque: {product.list_of_brands}")
+                print(f"            Ingrédients: {product.ingredients}")
+                print(f"            Lieux de vente: {product.list_of_stores}")
+                print("_______________________________")
+                print()
+        else:
+            print("Il n'y a pas de produit de substitution pour cet", end=" ")
+            print("article dans la base de données !")
         print()
         choice = input(": ")
         try:

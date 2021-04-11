@@ -12,6 +12,7 @@ from sqlalchemy import (
     Column,
     create_engine,
     desc,
+    exists,
     ForeignKey,
     func,
     Integer,
@@ -19,7 +20,7 @@ from sqlalchemy import (
     Table)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.sql.expression import true, and_
+from sqlalchemy.sql.expression import true, or_
 
 from constants import (
     BEVERAGES,
@@ -126,6 +127,10 @@ class Category(Base):
 
     def __str__(self):
         return self.category_name.title()
+
+    def __repr__(self):
+        return self.category_name.title()
+
     @classmethod
     def fill_database(cls, categories):
         for category in categories:
@@ -285,6 +290,9 @@ class Product(Base):
     def __str__(self):
         return self.product_name.title()
 
+    def __repr__(self):
+        return self.product_name.title()
+
     @classmethod
     def fill_database(cls, products, brands, categories, stores):
         for product in products:
@@ -397,11 +405,12 @@ class Product(Base):
             prod for prod in subcategory_prods if prod in main_category_prods}
 
     @classmethod
-    def get_better_prods(self, product):
+    def get_better_prods(self, product, subcategory_name):
 
         cats_of_the_chosen_product = product.list_of_categories
         categories_names = [
             category.category_name for category in cats_of_the_chosen_product]
+
         # One pair (product, weight) = product + list of categories in
         # common with the selected product
         list_of_pairs = (
@@ -409,7 +418,11 @@ class Product(Base):
                 Product, func.count(Product.id).label('category_count')
             )
             .join(Product.list_of_categories)
-            .filter(Category.category_name.in_(categories_names))
+            .filter(Category.category_name.in_(categories_names),
+                    Product.id != product.id,
+                    or_(Product.nutriscore < product.nutriscore,
+                        Product.nutriscore == 'a'))
+            .filter(Category.category_name == subcategory_name)
             .group_by(Product)
             .order_by(desc('category_count'),
                       Product.nutriscore,
