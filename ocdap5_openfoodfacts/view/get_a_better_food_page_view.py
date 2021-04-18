@@ -5,15 +5,15 @@ import traceback
 
 from logger import logger
 from constants import (
-    BETTER_BEVERAGES,
+    BETTER_FOOD,
     ERROR_COLOR,
-    GET_A_BETTER_BEVERAGE_PAGE,
+    GET_A_BETTER_FOOD_PAGE,
     INDEX_OF_FIRST_PROD,
     SUBSTITUTE)
 
 
-class GetABetterBeveragePageView:
-    """Display the page that list the best substitute beverages"""
+class GetABetterFoodPageView:
+    """Display the page that list the best substitute food"""
 
     def __init__(self):
         pass
@@ -24,7 +24,7 @@ class GetABetterBeveragePageView:
              clear_page_and_print_title,
              menu_header):
 
-        clear_page_and_print_title(BETTER_BEVERAGES)
+        clear_page_and_print_title(BETTER_FOOD)
         ic()
         subcategory_name = memory["subcategory_name"]
         product = memory["product"]
@@ -62,7 +62,7 @@ class GetABetterBeveragePageView:
 
             event_handler(
                 SUBSTITUTE,
-                GET_A_BETTER_BEVERAGE_PAGE,
+                GET_A_BETTER_FOOD_PAGE,
                 choice,)
         except Exception as e:
             e_traceback = traceback.format_exc()
@@ -74,8 +74,8 @@ class GetABetterBeveragePageView:
             {str(e)}""")
             sys.exit(ic())
             self.show(
-                controller_beverage_categories,
+                controller_food_categories,
                 event_handler,
                 clear_page_and_print_title,
                 menu_header,
-                get_beverage_cat_index)
+                get_food_cat_index)

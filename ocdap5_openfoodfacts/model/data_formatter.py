@@ -167,7 +167,14 @@ standard.
         for element in data_list:
             element = element.strip(" ,")[:max_length_of_element_in_data]
             element = self.format_element(controller, element, data_name)
+
             filtered_data_list.append(element)
+
+            # En:   Adding the "Aliments" (food) category.
+            # Fr:   Ajout de la catégorie «Aliments».
+            if "Aliments" in element:
+                filtered_data_list.append("Aliments")
+
         return filtered_data_list
 
     def format_element(self, controller, element, data_name):
@@ -192,14 +199,12 @@ Fr: Formate le nom de l'élément."""
             # Sometimes an ingredient have ingredients
             if ingredient.get("ingredients"):
                 inner_ingredients = ingredient.get("ingredients")
-                inner_ingredients_str = ""
-                for inner_ingredient in inner_ingredients:
-                    inner_ingredients_str += (
+                inner_ingredients_str = "".join((
                         str(inner_ingredient.get("text"))
                         + " "
                         + str(round(float(
                             inner_ingredient.get('percent_estimate')), 2))
-                        + "% - ")
+                        + "% - ") for inner_ingredient in inner_ingredients)
                 ingredients_str = (ingredients_str[:-2]
                                    + "(" + inner_ingredients_str[:-3] + ") - ")
                 'percent_estimate'

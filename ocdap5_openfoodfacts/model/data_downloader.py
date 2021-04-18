@@ -21,7 +21,7 @@ class DataDownloader:
             url = ("https://fr.openfoodfacts.org/cgi/search.pl"
                    + "?action=process"
                    + "&sort_by=unique_scan_n"
-                   + "&search_terms=aliments,boissons"
+                   + "&search_terms=Aliments,Boissons"
                    + "&fields=product_name,nutriscore_grade,"
                    + "categories,stores,brands,ingredients"
                    + f"&page_size={PRODUCTS_PER_PAGE}"

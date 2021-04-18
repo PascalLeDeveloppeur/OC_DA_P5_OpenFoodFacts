@@ -1,27 +1,89 @@
 import sys
 
+from icecream import ic
+import traceback
+
+from logger import logger
 from constants import (
     CHOOSE_A_CATEGORY,
-    SUBSTITUTE)
+    ERROR_COLOR,
+    INDEX_OF_FIRST_CAT,
+    NBR_OF_CATEGORIES,
+    NEXT_CATEGORIES,
+    PREVIOUS_CATEGORIES,
+    SUBSTITUTE,
+    SUBSTITUTE_A_FOOD_PAGE)
 
 
 class SubstituteAFoodPageView:
-    """Display the << baverage or food >> page"""
+    """Display the << subcategories of food >> page"""
 
     def __init__(self):
         pass
 
-    def show(self, event_handler, clear_and_print_title, menu_header):
-        clear_and_print_title(CHOOSE_A_CATEGORY)
-        
-        choice = input(f"""
-Que souhaitez-vous faire ?
+    def show(
+            self,
+            memory,
+            controller_food_categories,
+            event_handler,
+            clear_page_and_print_title,
+            menu_header,
+            get_food_cat_index,
+            set_food_cat_index):
+
+        clear_page_and_print_title(CHOOSE_A_CATEGORY)
+        ic()
+
+        print(
+            f"""
+Souhaitez-vous naviguer ?
 {menu_header}
-[4] Remplacer une boisson
-[5] Remplacer un aliment
-:""")
+Ou choisir une catégorie ?
+""")
+        is_next_cat_displayed = False
+        is_previous_cat_displayed = False
+        for i, category in enumerate(
+            controller_food_categories[get_food_cat_index:(
+                    get_food_cat_index + NBR_OF_CATEGORIES)]):
+
+            index_of_category = i + get_food_cat_index + INDEX_OF_FIRST_CAT
+            print(f"[{index_of_category}] {category}")
+        print()
+        if get_food_cat_index > 0:
+            print(f"[{PREVIOUS_CATEGORIES}] Catégories précédentes")
+            is_previous_cat_displayed = True
+
+        if get_food_cat_index + NBR_OF_CATEGORIES < (
+                len(controller_food_categories) - 1):
+            print(f"[{NEXT_CATEGORIES}] Catégories suivantes")
+            is_next_cat_displayed = True
+
+        choice = input(": ")
         try:
             choice = int(choice)
-            event_handler(SUBSTITUTE, "BEVERAGES", choice)
-        except Exception:
-            self.show(event_handler, clear_and_print_title)
+            if choice == NEXT_CATEGORIES and is_next_cat_displayed:
+                set_food_cat_index(
+                    get_food_cat_index + NBR_OF_CATEGORIES)
+            elif choice == PREVIOUS_CATEGORIES and is_previous_cat_displayed:
+                set_food_cat_index(
+                    get_food_cat_index - NBR_OF_CATEGORIES)
+
+            event_handler(
+                SUBSTITUTE,
+                SUBSTITUTE_A_FOOD_PAGE,
+                choice)
+        except Exception as e:
+            e_traceback = traceback.format_exc()
+            logger.error(f"""
+            {ERROR_COLOR}
+            ******************************************
+            {e_traceback}
+            ******************************************
+            {str(e)}""")
+            sys.exit(ic())
+            self.show(
+                controller_food_categories,
+                event_handler,
+                clear_page_and_print_title,
+                menu_header,
+                get_food_cat_index)

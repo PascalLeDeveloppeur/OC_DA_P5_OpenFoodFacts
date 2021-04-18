@@ -1,0 +1,21 @@
+Technical functioning (Fonctionnement technique)
+
+
+----------->[view]
+|             |
+|             |
+|       [page_view]
+|             |
+|             |
+| [                        ]-------->[                         ]
+| |controller.event_handler|         [branch_controller.analyze]
+| [                        ]<--------[                         ]
+|            |
+|            |
+|      [router.goto]
+|            |
+| [controller.title of the page]
+|            |
+|            |
+--------------
+

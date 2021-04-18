@@ -8,7 +8,7 @@ from constants import (
     HOME_PAGE,
     PROGRAM_QUIT_BY_USER,
     SUBSTITUTE_A_BEVERAGE_PAGE,
-    SUBSTITUTE_A_FOOD)
+    SUBSTITUTE_A_FOOD_PAGE)
 
 
 class TrunkController:
@@ -22,7 +22,7 @@ class TrunkController:
             if choice == 1:
                 controller.set_next_page_nbr(SUBSTITUTE_A_BEVERAGE_PAGE)
             elif choice == 2:
-                controller.set_next_page_nbr(SUBSTITUTE_A_FOOD)
+                controller.set_next_page_nbr(SUBSTITUTE_A_FOOD_PAGE)
             elif choice == 3:
                 controller.set_next_page_nbr(FAVORITES_PAGE)
             elif choice == 4:

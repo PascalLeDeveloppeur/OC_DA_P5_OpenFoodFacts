@@ -1,5 +1,7 @@
 import sys
 
+from icecream import ic
+
 from constants import (
     STARTER,
     INITIAL_PAGE,
@@ -12,8 +14,9 @@ class InitialPageView:
     def __init__(self):
         pass
 
-    def show(self, event_handler, clear_and_print_title):
-        clear_and_print_title(INITIAL)
+    def show(self, event_handler, clear_page_and_print_title):
+        clear_page_and_print_title(INITIAL)
+        ic()
         choice = input("""
 Que souhaitez-vous faire ?
 
@@ -25,4 +28,4 @@ Que souhaitez-vous faire ?
             choice = int(choice)
             event_handler(STARTER, INITIAL_PAGE, choice)
         except Exception:
-            self.show(event_handler, clear_and_print_title)
+            self.show(event_handler, clear_page_and_print_title)

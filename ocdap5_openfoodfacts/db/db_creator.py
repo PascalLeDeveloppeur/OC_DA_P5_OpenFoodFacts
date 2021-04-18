@@ -6,6 +6,7 @@ from unidecode import unidecode
 from icecream import ic
 from pprint import pprint
 
+from logger import logger
 from dotenv import load_dotenv
 from sqlalchemy import (
     Boolean,
@@ -391,15 +392,16 @@ class Product(Base):
             session.query(Category)
             .filter(Category.category_name == subcategory)
             .one_or_none())
+
         if category_obj:
             subcategory_prods = category_obj.list_of_products
 
-        beverages_cat = (session.query(Category)
-                         .filter(Category
-                                 .category_name == main_category)
-                         .one_or_none())
-        if beverages_cat:
-            main_category_prods = beverages_cat.list_of_products
+        main_category_obj = (session.query(Category)
+                             .filter(Category
+                                     .category_name == main_category)
+                             .one_or_none())
+        if main_category_obj:
+            main_category_prods = main_category_obj.list_of_products
 
         return {
             prod for prod in subcategory_prods if prod in main_category_prods}
@@ -412,7 +414,7 @@ class Product(Base):
             category.category_name for category in cats_of_the_chosen_product]
 
         # One pair (product, weight) = product + list of categories in
-        # common with the selected product
+        # common with the << selected product >>
         list_of_pairs = (
             session.query(
                 Product, func.count(Product.id).label('category_count')
@@ -422,7 +424,7 @@ class Product(Base):
                     Product.id != product.id,
                     or_(Product.nutriscore < product.nutriscore,
                         Product.nutriscore == 'a'))
-            .filter(Category.category_name == subcategory_name)
+            # .filter(Category.category_name == subcategory_name)
             .group_by(Product)
             .order_by(desc('category_count'),
                       Product.nutriscore,

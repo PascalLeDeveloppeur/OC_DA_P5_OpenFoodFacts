@@ -13,6 +13,7 @@ icecream = "*"
 requests = "*"
 ipdb = "*"
 unidecode = "*"
+terminaltables = "*"
 
 [dev-packages]
 

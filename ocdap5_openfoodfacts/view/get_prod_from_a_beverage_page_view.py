@@ -7,7 +7,7 @@ from logger import logger
 from constants import (
     CHOOSE_A_PRODUCT,
     ERROR_COLOR,
-    GET_PROD_FROM_A_SUBCAT_PAGE,
+    GET_PROD_FROM_A_BEVERAGE_PAGE,
     INDEX_OF_FIRST_PROD,
     NBR_OF_PRODUCTS,
     NEXT_PRODUCTS,
@@ -15,7 +15,7 @@ from constants import (
     SUBSTITUTE)
 
 
-class GetProdFromASubcatPageView:
+class GetProdFromABeveragePageView:
     """Display the page of all the products of a
     << subcategory of beverages >> """
 
@@ -26,12 +26,13 @@ class GetProdFromASubcatPageView:
             self,
             memory,
             event_handler,
-            clear_and_print_title,
+            clear_page_and_print_title,
             menu_header,
             get_beverage_prod_index,
             set_beverage_prod_index):
 
-        clear_and_print_title(CHOOSE_A_PRODUCT)
+        clear_page_and_print_title(CHOOSE_A_PRODUCT)
+        ic()
         print()
         print(memory["subcategory_name"])
 
@@ -77,7 +78,7 @@ Ou choisir un produit ?
 
             event_handler(
                 SUBSTITUTE,
-                GET_PROD_FROM_A_SUBCAT_PAGE,
+                GET_PROD_FROM_A_BEVERAGE_PAGE,
                 choice)
         except Exception as e:
             e_traceback = traceback.format_exc()
@@ -91,6 +92,6 @@ Ou choisir un produit ?
             self.show(
                 controller_beverage_categories,
                 event_handler,
-                clear_and_print_title,
+                clear_page_and_print_title,
                 menu_header,
                 get_beverage_cat_index)

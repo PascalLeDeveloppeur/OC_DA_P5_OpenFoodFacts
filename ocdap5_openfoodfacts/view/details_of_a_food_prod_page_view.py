@@ -6,13 +6,13 @@ import traceback
 from logger import logger
 from constants import (
     ERROR_COLOR,
-    DETAILS_OF_A_BEVERAGE_PROD_PAGE,
+    DETAILS_OF_A_FOOD_PROD_PAGE,
     PRODUCT_DETAILS,
     SUBSTITUTE)
 
 
-class DetailsOfABeverageProdPageView:
-    """Display the page of the details of a product which is a beverage"""
+class DetailsOfAFoodProdPageView:
+    """Display the page of the details of a product which is a food"""
 
     def __init__(self):
         pass
@@ -54,7 +54,7 @@ Que souhaitez-vous faire ?
 
             event_handler(
                 SUBSTITUTE,
-                DETAILS_OF_A_BEVERAGE_PROD_PAGE,
+                DETAILS_OF_A_FOOD_PROD_PAGE,
                 choice,)
         except Exception as e:
             e_traceback = traceback.format_exc()
@@ -66,8 +66,8 @@ Que souhaitez-vous faire ?
             {str(e)}""")
             sys.exit(ic())
             self.show(
-                controller_beverage_categories,
+                controller_food_categories,
                 event_handler,
                 clear_page_and_print_title,
                 menu_header,
-                get_beverage_cat_index)
+                get_food_cat_index)

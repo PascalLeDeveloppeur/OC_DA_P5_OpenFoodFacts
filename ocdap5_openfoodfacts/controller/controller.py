@@ -137,6 +137,8 @@ class Controller:
         elif branch_nbr == SUBSTITUTE:
             self.__substitute_controller.analyze(
                 self, page_nbr, choice, *args)
+            ic()
+            time.sleep(3)
 
         elif branch_nbr == TRUNK_BRANCH:
             self.__trunk_controller.analyze(self,
@@ -190,23 +192,38 @@ class Controller:
         self.__view.home_page(self.event_handler)
 
     def substitute_a_food(self, **kwargs):
-        self.__view.substitute_a_food_page(self.event_handler)
-        logger.info("Branche substituer un aliment page 1")
-        sys.exit()
+        self.__view.substitute_a_food_page(
+            self.memory,
+            self.__food_subcategories,
+            self.event_handler)
 
     def substitute_a_beverage(self, **kwargs):
-        time.sleep(2)
         self.__view.substitute_a_beverage_page(self.memory,
                                                self.__beverages_subcategories,
                                                self.event_handler)
 
-    def get_prod_from_a_subcat(self):
+    def get_prod_from_a_food(self):
+        self.memory['list_of_products'] = list(
+            Product.get_products_from_subcategory(
+                FOOD,
+                self.memory["subcategory_name"]))
+
+        self.__view.get_prod_from_a_food_page(
+            self.memory,
+            self.event_handler)
+
+    def get_prod_from_a_beverage(self):
         self.memory['list_of_products'] = list(
             Product.get_products_from_subcategory(
                 BEVERAGES,
                 self.memory["subcategory_name"]))
 
-        self.__view.get_prod_from_a_subcat_page(
+        self.__view.get_prod_from_a_beverage_page(
+            self.memory,
+            self.event_handler)
+
+    def details_of_a_food_prod(self):
+        self.__view.details_of_a_food_prod_page(
             self.memory,
             self.event_handler)
 
@@ -215,7 +232,22 @@ class Controller:
             self.memory,
             self.event_handler)
 
+    def get_a_better_food(self):
+        self.__view.get_a_better_food(
+            self.memory,
+            self.event_handler)
+
     def get_a_better_beverage(self):
         self.__view.get_a_better_beverage(
+            self.memory,
+            self.event_handler)
+
+    def added_to_fav_food(self):
+        self.__view.added_to_fav_food(
+            self.memory,
+            self.event_handler)
+
+    def added_to_fav(self):
+        self.__view.added_to_fav(
             self.memory,
             self.event_handler)

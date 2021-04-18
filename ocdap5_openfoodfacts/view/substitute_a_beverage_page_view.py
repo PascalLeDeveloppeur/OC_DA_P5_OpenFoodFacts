@@ -26,12 +26,13 @@ class SubstituteABeveragePageView:
             memory,
             controller_beverage_categories,
             event_handler,
-            clear_and_print_title,
+            clear_page_and_print_title,
             menu_header,
             get_beverage_cat_index,
             set_beverage_cat_index):
 
-        clear_and_print_title(CHOOSE_A_CATEGORY)
+        clear_page_and_print_title(CHOOSE_A_CATEGORY)
+        ic()
 
         print(
             f"""
@@ -83,6 +84,6 @@ Ou choisir une catégorie ?
             self.show(
                 controller_beverage_categories,
                 event_handler,
-                clear_and_print_title,
+                clear_page_and_print_title,
                 menu_header,
                 get_beverage_cat_index)
