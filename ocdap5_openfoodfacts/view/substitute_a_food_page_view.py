@@ -18,8 +18,7 @@ from constants import (
 class SubstituteAFoodPageView:
     """Display the << subcategories of food >> page"""
 
-    def __init__(self):
-        pass
+    
 
     def show(
             self,

@@ -11,21 +11,21 @@ from constants import (
     DB_HAS_BEEN_CREATED,
     DETAILS_OF_A_BEVERAGE_PROD_PAGE,
     DETAILS_OF_A_FOOD_PROD_PAGE,
+    FAVORITES_PAGE,
+    FAVORITE_SUBSTITUTE_DELETED,
     GET_A_BETTER_BEVERAGE_PAGE,
     GET_A_BETTER_FOOD_PAGE,
     GET_PROD_FROM_A_BEVERAGE_PAGE,
     GET_PROD_FROM_A_FOOD_PAGE,
     HOME_PAGE,
     INITIAL_PAGE,
+    LIST_OF_SUBSTITUTES_FOR_1_PRODUCT,
     SUBSTITUTE_A_BEVERAGE_PAGE,
     SUBSTITUTE_A_FOOD_PAGE)
 
 
 class Router:
     """Take user to wanted page"""
-
-    def __init__(self):
-        pass
 
     def go_to(self, controller):
         ic()
@@ -67,10 +67,12 @@ class Router:
             controller.added_to_fav_food()
 
         # Branch: Watch my fav
-        elif next_page == 301:
+        elif next_page == FAVORITES_PAGE:
             controller.favorites_page()
-        elif next_page == 302:
-            controller.fav_product_page()
+        elif next_page == LIST_OF_SUBSTITUTES_FOR_1_PRODUCT:
+            controller.list_of_favs()
+        elif next_page == FAVORITE_SUBSTITUTE_DELETED:
+            controller.one_fav_deleted()
 
         # Branch: root db creator
         elif next_page == DB_HAS_BEEN_CREATED:

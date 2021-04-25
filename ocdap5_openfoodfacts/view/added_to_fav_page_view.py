@@ -6,21 +6,15 @@ import traceback
 from logger import logger
 from constants import (
     ADDED_TO_FAV,
-    BETTER_BEVERAGES,
     ERROR_COLOR,
     GET_A_BETTER_BEVERAGE_PAGE,
-    INDEX_OF_FIRST_PROD,
     SUBSTITUTE)
 
 
 class AddedToFavPageView:
-    """Display the page that list the best substitute beverages"""
-
-    def __init__(self):
-        pass
+    """Display the page that confirm the addition of product in the fav list"""
 
     def show(self,
-             memory,
              event_handler,
              clear_page_and_print_title,
              menu_header):

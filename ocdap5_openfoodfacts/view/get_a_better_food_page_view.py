@@ -15,8 +15,7 @@ from constants import (
 class GetABetterFoodPageView:
     """Display the page that list the best substitute food"""
 
-    def __init__(self):
-        pass
+    
 
     def show(self,
              memory,

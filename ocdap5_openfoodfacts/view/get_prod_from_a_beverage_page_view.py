@@ -19,8 +19,7 @@ class GetProdFromABeveragePageView:
     """Display the page of all the products of a
     << subcategory of beverages >> """
 
-    def __init__(self):
-        pass
+    
 
     def show(
             self,

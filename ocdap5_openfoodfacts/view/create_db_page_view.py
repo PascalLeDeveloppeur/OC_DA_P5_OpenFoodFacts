@@ -7,8 +7,7 @@ from constants import (
 class CreateDbPageView:
     """Display the Create DB page"""
 
-    def __init__(self):
-        pass
+    
 
     def show(self, event_handler, clear_page_and_print_title):
         clear_page_and_print_title(CREATE_DB)

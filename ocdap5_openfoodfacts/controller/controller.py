@@ -3,6 +3,7 @@ import sys
 import time
 
 from dotenv import load_dotenv
+import traceback
 from icecream import ic
 from unidecode import unidecode
 from pprint import pprint
@@ -23,6 +24,7 @@ from db.db_creator import (
     Store)
 from constants import (
     BEVERAGES,
+    ERROR_COLOR,
     FAVORITES,
     FOOD,
     HOME_PAGE,
@@ -55,7 +57,9 @@ class Controller:
         self.__trunk_controller = TrunkController()
         self.__root_controller = RootController()
         self.memory = {"best_products": None,
+                       "chosen_pair": None,
                        "fav_prod": None,
+                       "list_of_pairs__original_v_substitutes": None,
                        "list_of_products": None,
                        "product": None,
                        "subcategory_name": None,
@@ -243,11 +247,32 @@ class Controller:
             self.event_handler)
 
     def added_to_fav_food(self):
-        self.__view.added_to_fav_food(
-            self.memory,
-            self.event_handler)
+        self.__view.added_to_fav_food(self.event_handler)
 
     def added_to_fav(self):
-        self.__view.added_to_fav(
-            self.memory,
-            self.event_handler)
+        self.__view.added_to_fav(self.event_handler)
+
+    def favorites_page(self, **kwargs):
+        try:
+            self.memory["list_of_pairs__original_v_substitutes"] = (
+                Product.get_favorites())
+
+            self.__view.favorites_page(
+                self.memory,
+                self.event_handler)
+        except Exception as e:
+            e_traceback = traceback.format_exc()
+            logger.error(f"""
+            {ERROR_COLOR}
+            ******************************************
+            {e_traceback}
+            ******************************************
+            {str(e)}""")
+            sys.exit(ic())
+
+    def list_of_favs(self):
+        self.__view.list_of_favs(self.memory,
+                                 self.event_handler)
+
+    def one_fav_deleted(self):
+        self.__view.one_fav_deleted(self.event_handler)

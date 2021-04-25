@@ -11,8 +11,7 @@ from constants import (
 class InitialPageView:
     """Display the very first page of the application"""
 
-    def __init__(self):
-        pass
+    
 
     def show(self, event_handler, clear_page_and_print_title):
         clear_page_and_print_title(INITIAL)

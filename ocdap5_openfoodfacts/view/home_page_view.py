@@ -9,8 +9,7 @@ from constants import (
 class HomePageView:
     """Display the home page"""
 
-    def __init__(self):
-        pass
+    
 
     def show(self, event_handler, clear_page_and_print_title):
         clear_page_and_print_title(HOME)

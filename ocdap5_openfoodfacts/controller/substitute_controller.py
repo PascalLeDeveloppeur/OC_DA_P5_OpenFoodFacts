@@ -29,9 +29,6 @@ from logger import logger
 class SubstituteController:
     """analyse events on the substitute branch"""
 
-    def __init__(self):
-        pass
-
     def analyze(self, controller, page_nbr, choice, args={}):
         if page_nbr == SUBSTITUTE_A_FOOD_PAGE:
             controller.manage_menu_header(choice)
@@ -69,7 +66,6 @@ class SubstituteController:
                 controller.memory["product"] = (
                     controller.memory["list_of_products"][
                         choice - INDEX_OF_FIRST_PROD])
-            time.sleep(3)
 
         elif page_nbr == GET_PROD_FROM_A_BEVERAGE_PAGE:
             controller.manage_menu_header(choice)

@@ -28,6 +28,9 @@ from view.get_a_better_food_page_view import GetABetterFoodPageView
 from view.get_a_better_beverage_page_view import GetABetterBeveragePageView
 from view.added_to_fav_food_page_view import AddedToFavFoodPageView
 from view.added_to_fav_page_view import AddedToFavPageView
+from view.favorites_main_page_view import FavoritesMainPageView
+from view.list_of_favs_page_view import ListOfFavsPageView
+from view.one_fav_deleted_page_view import OneFavDeletedPageView
 
 
 class View:
@@ -40,6 +43,7 @@ class View:
         self.__food_prod_index = 0
         self.__initial_page_view = InitialPageView()
         self.__home_page_view = HomePageView()
+        self.__favorites_page_view = FavoritesMainPageView()
         self.__added_to_fav_page_view = AddedToFavPageView()
         self.__added_to_fav_food_page_view = AddedToFavFoodPageView()
         self.__substitute_a_food_page_view = SubstituteAFoodPageView()
@@ -60,6 +64,8 @@ class View:
         self.__get_a_better_beverage_page_view = GetABetterBeveragePageView()
         self.__create_db_page_view = CreateDbPageView()
         self.__db_created_page_view = DbCreatedPageView()
+        self.__list_of_favs_page_view = ListOfFavsPageView()
+        self.__one_fav_deleted_page_view = OneFavDeletedPageView()
         self.menu_header = """
 [1] Aller à l'accueil
 [2] Page précédente
@@ -208,21 +214,42 @@ class View:
             self.menu_header)
 
     def added_to_fav_food(self,
-                          memory,
                           event_handler):
 
         self.__added_to_fav_food_page_view.show(
+            event_handler,
+            self.clear_page_and_print_title,
+            self.menu_header)
+
+    def added_to_fav(self, event_handler):
+
+        self.__added_to_fav_page_view.show(
+            event_handler,
+            self.clear_page_and_print_title,
+            self.menu_header)
+
+    def favorites_page(self,
+                       memory,
+                       event_handler):
+
+        self.__favorites_page_view.show(
             memory,
             event_handler,
             self.clear_page_and_print_title,
             self.menu_header)
 
-    def added_to_fav(self,
+    def list_of_favs(self,
                      memory,
                      event_handler):
 
-        self.__added_to_fav_page_view.show(
+        self.__list_of_favs_page_view.show(
             memory,
+            event_handler,
+            self.clear_page_and_print_title,
+            self.menu_header)
+
+    def one_fav_deleted(self, event_handler):
+        self.__one_fav_deleted_page_view.show(
             event_handler,
             self.clear_page_and_print_title,
             self.menu_header)

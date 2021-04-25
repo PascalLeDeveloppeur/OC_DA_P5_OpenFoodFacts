@@ -23,8 +23,7 @@ from constants import (
 class DataFormatter:
     """Formats the data that will be put into the database."""
 
-    def __init__(self):
-        pass
+    
 
     def filter_data(self, rough_products):
         """
@@ -84,6 +83,12 @@ Fr: Supprime les produits qui n'ont pas tous les champs requis."""
         if not product.get("brands"):
             return []
         if not product.get("product_name"):
+            return []
+        if not product.get("product_name"):
+            return []
+        if not product.get("nutriscore_grade"):
+            return []
+        if not product.get("url"):
             return []
         return product
 

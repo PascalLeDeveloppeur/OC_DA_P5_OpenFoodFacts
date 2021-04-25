@@ -4,6 +4,7 @@ from sqlalchemy.sql import elements
 
 from unidecode import unidecode
 from icecream import ic
+import traceback
 from pprint import pprint
 
 from logger import logger
@@ -27,11 +28,14 @@ from constants import (
     BEVERAGES,
     BRAND_NAME_MAX_LENGTH,
     CATEGORY_NAME_MAX_LENGTH,
+    ERROR_COLOR,
     INGREDIENTS_MAX_LENGTH,
     LIST_OF_BEVERAGES_THAT_ARE_FOOD_TOO,
     MAX_PRODS_DISPLAYED,
+    OK,
     PRODUCT_NAME_MAX_LENGTH,
-    STORE_NAME_MAX_LENGTH)
+    STORE_NAME_MAX_LENGTH,
+    URL_MAX_LENGTH)
 
 # Elements of connection to the database ====
 load_dotenv()
@@ -156,7 +160,7 @@ class Category(Base):
         """
         beverage = (session.query(Category)
                     .filter(Category.category_name == BEVERAGES)
-                    .one())
+                    .one_or_none())
         if beverage:
             # Collecting products from the Beverage category.
             products_list = beverage.list_of_products
@@ -166,7 +170,7 @@ class Category(Base):
                 category = (
                     session.query(Category)
                     .filter(Category.category_name == beverage_category_name)
-                    .one())
+                    .one_or_none())
                 category.is_beverage = True
                 category.is_food = False
 
@@ -244,6 +248,7 @@ class Product(Base):
     product_name = Column(String(PRODUCT_NAME_MAX_LENGTH), nullable=False)
     nutriscore = Column(String(2), nullable=False)
     ingredients = Column(String(INGREDIENTS_MAX_LENGTH), nullable=False)
+    url = Column(String(URL_MAX_LENGTH), nullable=False)
 
     # List of categories to which a product belongs
     list_of_categories = relationship(
@@ -277,7 +282,7 @@ class Product(Base):
         primaryjoin=id == l_original_and_substitute.c.original_prod_id,
         secondaryjoin=id == l_original_and_substitute.c.substitute_prod_id)
 
-    # list of original products for one substitute product
+    # list of substitutes products for one original product
     all_substitutes = relationship(
         'Product',
         secondary=l_original_and_substitute,
@@ -307,13 +312,17 @@ class Product(Base):
             product_name_str = product.get("product_name")
             product_name_str = cls.rename_if_not_exists(product_name_str)
 
+            url_str = product.get("url")
+            url_str = cls.rename_if_not_exists(url_str)
+
             is_commitable = False
 
             # insert product
             new_product = Product(
                 product_name=product_name_str,
                 nutriscore=nutriscore_str,
-                ingredients=ingredients_str)
+                ingredients=ingredients_str,
+                url=url_str)
             session.add(new_product)
 
             for brand in brands:
@@ -407,7 +416,7 @@ class Product(Base):
             prod for prod in subcategory_prods if prod in main_category_prods}
 
     @classmethod
-    def get_better_prods(self, product, subcategory_name):
+    def get_better_prods(cls, product, subcategory_name):
 
         cats_of_the_chosen_product = product.list_of_categories
         categories_names = [
@@ -433,3 +442,39 @@ class Product(Base):
             .all())
 
         return list_of_pairs
+
+    @classmethod
+    def get_favorites(cls):
+        try:
+            products = session.query(Product).all()
+            pairs__original_vs_substitute = []
+            for product in products:
+                substitute_prods = product.all_substitutes
+                if len(substitute_prods) > 0:
+                    pairs__original_vs_substitute.append(
+                        (product, substitute_prods))
+
+            return pairs__original_vs_substitute
+
+        except Exception as e:
+            print(str(e))
+
+    @classmethod
+    def delete_fav_substitute(cls, original, substitute):
+        try:
+            product = (
+                session.query(Product)
+                .filter(Product.product_name == original.product_name)
+                .one_or_none())
+
+            product.all_substitutes.remove(substitute)
+            session.commit()
+        except Exception as e:
+            e_traceback = traceback.format_exc()
+            logger.error(f"""
+            {ERROR_COLOR}
+            ******************************************
+            {e_traceback}
+            ******************************************
+            {str(e)}""")
+            sys.exit(ic())

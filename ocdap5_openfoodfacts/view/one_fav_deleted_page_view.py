@@ -5,21 +5,21 @@ import traceback
 
 from logger import logger
 from constants import (
-    ADDED_TO_FAV_FOOD,
+    DELETED_FROM_FAV,
     ERROR_COLOR,
-    GET_A_BETTER_FOOD_PAGE,
-    SUBSTITUTE)
+    FAVORITES,
+    FAVORITE_SUBSTITUTE_DELETED)
 
 
-class AddedToFavFoodPageView:
-    """Display the page that confirm the addition of product in the fav list"""
+class OneFavDeletedPageView:
+    """Display the page that confirm the deletion of product from fav list"""
 
     def show(self,
              event_handler,
              clear_page_and_print_title,
              menu_header):
 
-        clear_page_and_print_title(ADDED_TO_FAV_FOOD)
+        clear_page_and_print_title(DELETED_FROM_FAV)
         ic()
         print()
         print("Que souhaitez-vous faire ?")
@@ -30,9 +30,9 @@ class AddedToFavFoodPageView:
             choice = int(choice)
 
             event_handler(
-                SUBSTITUTE,
-                GET_A_BETTER_FOOD_PAGE,
-                choice,)
+                FAVORITES,
+                FAVORITE_SUBSTITUTE_DELETED,
+                choice)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -43,8 +43,8 @@ class AddedToFavFoodPageView:
             {str(e)}""")
             sys.exit(ic())
             self.show(
-                controller_food_categories,
+                controller_beverage_categories,
                 event_handler,
                 clear_page_and_print_title,
                 menu_header,
-                get_food_cat_index)
+                get_beverage_cat_index)

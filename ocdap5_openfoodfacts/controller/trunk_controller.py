@@ -14,8 +14,7 @@ from constants import (
 class TrunkController:
     """analyse events on the main branch"""
 
-    def __init__(self):
-        pass
+    
 
     def analyze(self, controller, page_nbr, choice, **kwargs):
         if page_nbr == HOME_PAGE:

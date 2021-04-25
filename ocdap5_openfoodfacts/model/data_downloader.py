@@ -6,8 +6,7 @@ from constants import PRODUCTS_PER_PAGE
 class DataDownloader:
     """Download data from OpenFoodFacts to populate the local database."""
 
-    def __init__(self):
-        pass
+    
 
     def rough_products(self):
         return self.__rough_products
@@ -23,7 +22,7 @@ class DataDownloader:
                    + "&sort_by=unique_scan_n"
                    + "&search_terms=Aliments,Boissons"
                    + "&fields=product_name,nutriscore_grade,"
-                   + "categories,stores,brands,ingredients"
+                   + "categories,stores,brands,ingredients,url"
                    + f"&page_size={PRODUCTS_PER_PAGE}"
                    + f"&json=1&page={page_nbr + 1}")
             response = requests.get(url)

@@ -14,8 +14,7 @@ from constants import (
 class DetailsOfAFoodProdPageView:
     """Display the page of the details of a product which is a food"""
 
-    def __init__(self):
-        pass
+    
 
     def show(
             memory,
