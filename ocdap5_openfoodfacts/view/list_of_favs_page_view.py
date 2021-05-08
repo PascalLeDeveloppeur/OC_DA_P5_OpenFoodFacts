@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     FAVORITES,
     FAVS_FOR_A_PRODUCT,
     ERROR_COLOR,
@@ -22,7 +23,6 @@ class ListOfFavsPageView:
             menu_header):
 
         clear_page_and_print_title(FAVS_FOR_A_PRODUCT)
-        ic()
         print()
         print(f"Produit d'origine: {memory['chosen_pair'][0]}", end=" ")
         print(f"Marque: {memory['chosen_pair'][0].list_of_brands}")
@@ -49,10 +49,17 @@ Ou supprimer un favori ?
         choice = input(": ")
         try:
             choice = int(choice)
+            if choice > row_nbr:
+                choice = CHOICE_ERROR
             event_handler(
                 FAVORITES,
                 FAVS_FOR_A_PRODUCT,
                 choice)
+        except ValueError:
+            event_handler(
+                FAVORITES,
+                FAVS_FOR_A_PRODUCT,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""

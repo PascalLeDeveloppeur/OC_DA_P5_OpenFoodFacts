@@ -143,7 +143,6 @@ class View:
                                    event_handler):
 
         self.__substitute_a_beverage_page_view.show(
-            memory,
             controller_categories,
             event_handler,
             self.clear_page_and_print_title,

@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     ERROR_COLOR,
     FAVORITES,
     FAVORITES_PAGE,
@@ -22,7 +23,6 @@ class FavoritesMainPageView:
             menu_header):
 
         clear_page_and_print_title(FAVORITES)
-        ic()
         print()
 
         print(
@@ -48,10 +48,18 @@ Ou modifier une paire (original vs favori) ?
         try:
             choice = int(choice)
 
+            if choice > i + INDEX_OF_FIRST_PROD:
+                choice = CHOICE_ERROR
+
             event_handler(
                 FAVORITES,
                 FAVORITES_PAGE,
                 choice)
+        except ValueError:
+            event_handler(
+                FAVORITES,
+                FAVORITES_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""

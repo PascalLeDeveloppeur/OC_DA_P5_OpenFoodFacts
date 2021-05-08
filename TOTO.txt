@@ -1,2 +1,0 @@
-1.  Supprimer tous les produits dont la catégorie commence par
-    << En: >>.

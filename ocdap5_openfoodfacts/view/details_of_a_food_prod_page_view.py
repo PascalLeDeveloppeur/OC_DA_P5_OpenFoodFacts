@@ -35,10 +35,13 @@ class DetailsOfAFoodProdPageView:
         print(product.list_of_brands)
         print()
         print("Ingrédients: ", product.ingredients)
+        print()
         print("Lieu(x) de ventes:", end=" ")
         list_of_stores = ", ".join(
             store.store_name for store in product.list_of_stores)
         print(list_of_stores)
+        print()
+        print("Plus d'info: ", product.url)
         print()
 
         print(
@@ -64,9 +67,3 @@ Que souhaitez-vous faire ?
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_food_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_food_cat_index)

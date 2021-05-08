@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     CHOOSE_A_PRODUCT,
     ERROR_COLOR,
     GET_PROD_FROM_A_BEVERAGE_PAGE,
@@ -19,8 +20,6 @@ class GetProdFromABeveragePageView:
     """Display the page of all the products of a
     << subcategory of beverages >> """
 
-    
-
     def show(
             self,
             memory,
@@ -31,7 +30,6 @@ class GetProdFromABeveragePageView:
             set_beverage_prod_index):
 
         clear_page_and_print_title(CHOOSE_A_PRODUCT)
-        ic()
         print()
         print(memory["subcategory_name"])
 
@@ -74,11 +72,23 @@ Ou choisir un produit ?
             elif choice == PREVIOUS_PRODUCTS and is_previous_prod_displayed:
                 set_beverage_prod_index(
                     get_beverage_prod_index - NBR_OF_PRODUCTS)
+            elif choice > index_of_product:
+                choice = CHOICE_ERROR
 
             event_handler(
                 SUBSTITUTE,
                 GET_PROD_FROM_A_BEVERAGE_PAGE,
                 choice)
+        except IndexError:
+            event_handler(
+                SUBSTITUTE,
+                GET_PROD_FROM_A_BEVERAGE_PAGE,
+                CHOICE_ERROR)
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                GET_PROD_FROM_A_BEVERAGE_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -88,9 +98,3 @@ Ou choisir un produit ?
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_beverage_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_beverage_cat_index)

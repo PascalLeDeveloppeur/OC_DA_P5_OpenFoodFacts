@@ -29,7 +29,16 @@ from logger import logger
 class SubstituteController:
     """analyse events on the substitute branch"""
 
-    def analyze(self, controller, page_nbr, choice, args={}):
+    def analyze(self, controller, page_nbr, choice):
+        """Analyzes the user's choice. Stores the data that can be reused
+        then indicates the number of the next page to display.
+
+        Args:
+            controller (object): Main controller
+            page_nbr (integer): The number of the page where the user is
+            located
+            choice (integer): The choice made by the user
+        """
         if page_nbr == SUBSTITUTE_A_FOOD_PAGE:
             controller.manage_menu_header(choice)
             if choice in [NEXT_CATEGORIES, PREVIOUS_CATEGORIES]:
@@ -53,8 +62,6 @@ class SubstituteController:
                         choice - INDEX_OF_FIRST_CAT])
 
         elif page_nbr == GET_PROD_FROM_A_FOOD_PAGE:
-            ic()
-            time.sleep(3)
             controller.manage_menu_header(choice)
             if choice in [NEXT_PRODUCTS, PREVIOUS_PRODUCTS]:
                 logger.info("if Précédents / suivants")
@@ -83,18 +90,14 @@ class SubstituteController:
             controller.manage_menu_header(choice)
             if choice == LOOK_FOR_A_BETTER_PRODUCT:
                 controller.memory["best_products"] = (
-                    Product.get_better_prods(
-                        controller.memory["product"],
-                        controller.memory["subcategory_name"]))
+                    Product.get_better_prods(controller.memory["product"]))
                 controller.set_next_page_nbr(GET_A_BETTER_FOOD_PAGE)
 
         elif page_nbr == DETAILS_OF_A_BEVERAGE_PROD_PAGE:
             controller.manage_menu_header(choice)
             if choice == LOOK_FOR_A_BETTER_PRODUCT:
                 controller.memory["best_products"] = (
-                    Product.get_better_prods(
-                        controller.memory["product"],
-                        controller.memory["subcategory_name"]))
+                    Product.get_better_prods(controller.memory["product"]))
                 controller.set_next_page_nbr(GET_A_BETTER_BEVERAGE_PAGE)
 
         elif page_nbr == GET_A_BETTER_FOOD_PAGE:

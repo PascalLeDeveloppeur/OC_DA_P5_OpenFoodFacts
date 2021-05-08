@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     DELETED_FROM_FAV,
     ERROR_COLOR,
     FAVORITES,
@@ -20,19 +21,15 @@ class OneFavDeletedPageView:
              menu_header):
 
         clear_page_and_print_title(DELETED_FROM_FAV)
-        ic()
         print()
-        print("Que souhaitez-vous faire ?")
-        print(f"{menu_header}")
-        choice = input(": ")
+        print("Pressez la touche [Entrée]")
+        input(": ")
 
         try:
-            choice = int(choice)
-
             event_handler(
                 FAVORITES,
                 FAVORITE_SUBSTITUTE_DELETED,
-                choice)
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -42,9 +39,3 @@ class OneFavDeletedPageView:
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_beverage_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_beverage_cat_index)

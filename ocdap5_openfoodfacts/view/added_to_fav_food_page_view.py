@@ -33,6 +33,10 @@ class AddedToFavFoodPageView:
                 SUBSTITUTE,
                 GET_A_BETTER_FOOD_PAGE,
                 choice,)
+        except IndexError:
+            pass
+        except ValueError:
+            pass
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -42,9 +46,3 @@ class AddedToFavFoodPageView:
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_food_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_food_cat_index)

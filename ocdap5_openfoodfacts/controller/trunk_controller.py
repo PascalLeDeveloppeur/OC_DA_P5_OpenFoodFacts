@@ -14,9 +14,7 @@ from constants import (
 class TrunkController:
     """analyse events on the main branch"""
 
-    
-
-    def analyze(self, controller, page_nbr, choice, **kwargs):
+    def analyze(self, controller, page_nbr, choice):
         if page_nbr == HOME_PAGE:
             if choice == 1:
                 controller.set_next_page_nbr(SUBSTITUTE_A_BEVERAGE_PAGE)

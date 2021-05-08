@@ -15,7 +15,7 @@ class FavoritesController:
             controller.manage_menu_header(choice)
             if choice >= INDEX_OF_FIRST_PROD:
                 controller.set_next_page_nbr(LIST_OF_SUBSTITUTES_FOR_1_PRODUCT)
-            controller.memory["chosen_pair"] = (
+                controller.memory["chosen_pair"] = (
                     controller.memory["list_of_pairs__original_v_substitutes"][
                         choice - INDEX_OF_FIRST_PROD])
 
@@ -36,3 +36,4 @@ class FavoritesController:
 
         else:
             controller.home_page()
+

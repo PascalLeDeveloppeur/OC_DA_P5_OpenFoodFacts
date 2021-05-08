@@ -7,8 +7,6 @@ from constants import (
 class DbCreatedPageView:
     """Display the page that say Database has been created"""
 
-    
-
     def show(self, event_handler, clear_page_and_print_title):
         clear_page_and_print_title(DATABASE_CREATED)
         choice = input("""

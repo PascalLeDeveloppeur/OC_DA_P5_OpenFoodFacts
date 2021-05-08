@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     ERROR_COLOR,
     DETAILS_OF_A_BEVERAGE_PROD_PAGE,
     PRODUCT_DETAILS,
@@ -14,8 +15,6 @@ from constants import (
 class DetailsOfABeverageProdPageView:
     """Display the page of the details of a product which is a beverage"""
 
-    
-
     def show(
             memory,
             event_handler,
@@ -23,7 +22,6 @@ class DetailsOfABeverageProdPageView:
             menu_header):
 
         clear_page_and_print_title(PRODUCT_DETAILS)
-        ic()
         subcategory_name = memory["subcategory_name"]
         product = memory["product"]
         print()
@@ -34,11 +32,16 @@ class DetailsOfABeverageProdPageView:
         # Below, str form is possible because of __repr__ in Product class
         print(product.list_of_brands)
         print()
+        print("Description: ", product.description)
+        print()
         print("Ingrédients: ", product.ingredients)
+        print()
         print("Lieu(x) de ventes:", end=" ")
         list_of_stores = ", ".join(
             store.store_name for store in product.list_of_stores)
         print(list_of_stores)
+        print()
+        print("Plus d'info: ", product.url)
         print()
 
         print(
@@ -54,7 +57,12 @@ Que souhaitez-vous faire ?
             event_handler(
                 SUBSTITUTE,
                 DETAILS_OF_A_BEVERAGE_PROD_PAGE,
-                choice,)
+                choice)
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                DETAILS_OF_A_BEVERAGE_PROD_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -64,9 +72,3 @@ Que souhaitez-vous faire ?
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_beverage_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_beverage_cat_index)

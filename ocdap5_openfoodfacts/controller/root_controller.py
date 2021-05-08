@@ -37,7 +37,7 @@ class RootController:
         self.__data_formatter = DataFormatter()
         self.__rough_products = []
 
-    def analyze(self, controller, page_nbr, choice, **kwargs):
+    def analyze(self, controller, page_nbr, choice):
         if page_nbr == CREATE_DB_PAGE:
             if choice == 1:
                 try:
@@ -67,7 +67,6 @@ class RootController:
                         self.__data_formatter.format_products(
                                         controller,
                                         prefiltered_products))
-
                     # Database feeding
                     logger.info("Remplissage des tables en cours...")
                     Brand.fill_database(brands)
@@ -86,18 +85,18 @@ class RootController:
                                 + "de [Boissons] et [Aliments] en cours...")
                     Category.extract_beverage_subcategories(controller)
 
+                    Category.set_beverages_that_are_food_too()
+                    Category.remove_food_categories_from_beverages()
+
                     controller.set_beverages_subcategories(
                         Category.get_beverages_list())
 
                     controller.set_food_subcategories(
                         Category.get_food_list())
 
-                    Category.set_beverages_that_are_food_too()
-
                     logger.info(
                         "Sous-catégories de [Boissons]"
                         + "et [Aliments]récupérées")
-                    time.sleep(2)
                     controller.set_next_page_nbr(DB_HAS_BEEN_CREATED)
                 except InterfaceError:  # Unable to connect to the database
                     e_traceback = traceback.format_exc()
@@ -112,7 +111,6 @@ class RootController:
                     or the connection elements are not correct.
                     ******************************************
                     {ic()} {NORMAL_COLOR}""")
-                    time.sleep(2)
                     sys.exit(ic())
 
                 except DBAPIError:  # <= any database error
@@ -127,7 +125,6 @@ class RootController:
                     Something went wrong with the database.
                     ******************************************
                     {ic()} {NORMAL_COLOR}""")
-                    time.sleep(2)
                     sys.exit(ic())
                 except Exception as e:
                     e_traceback = traceback.format_exc()
@@ -140,7 +137,6 @@ class RootController:
                     {str(e)}
                     ******************************************
                     {ic()} {NORMAL_COLOR}""")
-                    time.sleep(2)
                     sys.exit(ic())
             elif choice == 2:
                 controller.set_next_page_nbr(HOME_PAGE)

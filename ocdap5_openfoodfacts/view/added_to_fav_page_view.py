@@ -6,6 +6,7 @@ import traceback
 from logger import logger
 from constants import (
     ADDED_TO_FAV,
+    CHOICE_ERROR,
     ERROR_COLOR,
     GET_A_BETTER_BEVERAGE_PAGE,
     SUBSTITUTE)
@@ -20,7 +21,6 @@ class AddedToFavPageView:
              menu_header):
 
         clear_page_and_print_title(ADDED_TO_FAV)
-        ic()
         print()
         print("Que souhaitez-vous faire ?")
         print(f"{menu_header}")
@@ -32,7 +32,17 @@ class AddedToFavPageView:
             event_handler(
                 SUBSTITUTE,
                 GET_A_BETTER_BEVERAGE_PAGE,
-                choice,)
+                choice)
+        except IndexError:
+            event_handler(
+                SUBSTITUTE,
+                GET_A_BETTER_BEVERAGE_PAGE,
+                CHOICE_ERROR)
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                GET_A_BETTER_BEVERAGE_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
@@ -42,9 +52,3 @@ class AddedToFavPageView:
             ******************************************
             {str(e)}""")
             sys.exit(ic())
-            self.show(
-                controller_beverage_categories,
-                event_handler,
-                clear_page_and_print_title,
-                menu_header,
-                get_beverage_cat_index)

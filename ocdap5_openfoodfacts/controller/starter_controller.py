@@ -11,8 +11,6 @@ from constants import (
 class StarterController:
     """analyse events on the starter branch"""
 
-    
-
     def analyze(self, controller, page_nbr, choice, **kwargs):
         if page_nbr == INITIAL_PAGE:
             if choice == 1:

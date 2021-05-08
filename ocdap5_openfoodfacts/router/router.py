@@ -28,8 +28,6 @@ class Router:
     """Take user to wanted page"""
 
     def go_to(self, controller):
-        ic()
-        time.sleep(3)
         next_page = controller.get_next_page()
 
         # Branch: starter
@@ -54,8 +52,6 @@ class Router:
 
         # Branch: Substitute a food
         elif next_page == SUBSTITUTE_A_FOOD_PAGE:
-            ic()
-            time.sleep(3)
             controller.substitute_a_food()
         elif next_page == GET_PROD_FROM_A_FOOD_PAGE:
             controller.get_prod_from_a_food()

@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     CHOOSE_A_CATEGORY,
     ERROR_COLOR,
     INDEX_OF_FIRST_CAT,
@@ -18,8 +19,6 @@ from constants import (
 class SubstituteAFoodPageView:
     """Display the << subcategories of food >> page"""
 
-    
-
     def show(
             self,
             memory,
@@ -31,7 +30,6 @@ class SubstituteAFoodPageView:
             set_food_cat_index):
 
         clear_page_and_print_title(CHOOSE_A_CATEGORY)
-        ic()
 
         print(
             f"""
@@ -66,11 +64,23 @@ Ou choisir une catégorie ?
             elif choice == PREVIOUS_CATEGORIES and is_previous_cat_displayed:
                 set_food_cat_index(
                     get_food_cat_index - NBR_OF_CATEGORIES)
+            elif choice > index_of_category:
+                choice = CHOICE_ERROR
 
             event_handler(
                 SUBSTITUTE,
                 SUBSTITUTE_A_FOOD_PAGE,
                 choice)
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                SUBSTITUTE_A_FOOD_PAGE,
+                CHOICE_ERROR)
+        except IndexError:
+            event_handler(
+                SUBSTITUTE,
+                SUBSTITUTE_A_FOOD_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
