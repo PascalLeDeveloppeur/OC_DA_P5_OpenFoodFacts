@@ -31,13 +31,15 @@ from constants import (
     BRAND_NAME_MAX_LENGTH,
     CATEGORY_NAME_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
+    EN_BEVERAGES,
     ERROR_COLOR,
     INGREDIENTS_MAX_LENGTH,
     LIST_OF_BEVERAGES_THAT_ARE_FOOD_TOO,
-    LIST_OF_FOOD_THAT_IS_NOT_BEVERAGE,
+    LIST_OF_BEVERAGES_TO_REMOVE_FROM_FOOD,
+    LIST_OF_FOOD_TO_REMOVE_FROM_BEVERAGE,
     LIST_OF_WRONG_BEVERAGES,
     MAX_PRODS_DISPLAYED,
-    OK,
+    NORMAL_COLOR,
     PRODUCT_NAME_MAX_LENGTH,
     STORE_NAME_MAX_LENGTH,
     URL_MAX_LENGTH)
@@ -130,7 +132,7 @@ class Category(Base):
                            nullable=False,
                            unique=True)
     is_beverage = Column(Boolean, default=False)
-    is_food = Column(Boolean, default=True)
+    is_food = Column(Boolean, default=False)
 
     # List of products that belong to a selected category
     list_of_products = relationship(
@@ -160,7 +162,7 @@ class Category(Base):
                 session.rollback()
 
     @classmethod
-    def extract_beverage_subcategories(cls, controller):
+    def set_beverage_subcategories(cls, controller):
         """Collect a list of subcategories that are part of
         the main category: Beverages.
 
@@ -171,8 +173,7 @@ class Category(Base):
             categories as they are necessarily part of "Beverages"
             and put them in the list of names <<beverage_categories_names>>.
         4. For each category whose name is in the list, update its
-            <<is_beverage>> field. Set it to true and its "is_food" field
-            to false"""
+            <<is_beverage>> field. Set it to true."""
         beverage = (session.query(Category)
                     .filter(Category.category_name == BEVERAGES)
                     .one_or_none())
@@ -180,7 +181,7 @@ class Category(Base):
             # Collecting products from the Beverage category.
             products_list = beverage.list_of_products
             products_list = cls.remove_wrong_beverages_from_list(products_list)
-            beverage_categories_names = Product.get_categories_from_product(
+            beverage_categories_names = Product.get_categories_from_products(
                 products_list)
             for beverage_category_name in beverage_categories_names:
                 category = (
@@ -188,16 +189,61 @@ class Category(Base):
                     .filter(Category.category_name == beverage_category_name)
                     .one_or_none())
                 category.is_beverage = True
-                category.is_food = False
 
             session.commit()
         else:
-            print()
-            print("**** No beverage found ! *****")
-            print()
+            logger.error(f"""
+            {ERROR_COLOR}
+            ******************************************
+            Error!
+            No beverage found
+            ******************************************
+            {ic()} {NORMAL_COLOR}""")
+            sys.exit(ic())
+
+    @classmethod
+    def set_food_subcategories(cls, controller):
+        """Collect a list of subcategories that are not beverages.
+
+        Here is the process:
+        1. Select a list of products that are not beverages
+        2. For each product from the list, select all the associated
+            categories as they are necessarily part of "Food"
+            and put them in the list of names <<food_categories_names>>.
+        4. For each category whose name is in the list, update its
+            <<is_food>> field. Set it to true."""
+        products_that_are_not_beverages = Product.only_food_list()
+        if products_that_are_not_beverages:
+            food_categories_names = Product.get_categories_from_products(
+                products_that_are_not_beverages)
+            for food_category_name in food_categories_names:
+                category = (
+                    session.query(Category)
+                    .filter(Category.category_name == food_category_name)
+                    .one_or_none())
+                category.is_food = True
+
+            session.commit()
+        else:
+            logger.error(f"""
+            {ERROR_COLOR}
+            ******************************************
+            Error!
+            No food found
+            ******************************************
+            {ic()} {NORMAL_COLOR}""")
+            sys.exit(ic())
 
     @classmethod
     def remove_wrong_beverages_from_list(cls, products_list):
+        """Remove products that are not beverage from the beverages list
+
+        Args:
+            products_list (list of objects): Initial list of beverages
+
+        Returns:
+            list of objects: Filtered list of beverages
+        """
         return [
             prod for prod in products_list
             if prod.product_name not in LIST_OF_WRONG_BEVERAGES]
@@ -252,7 +298,9 @@ class Category(Base):
 
     @classmethod
     def remove_food_categories_from_beverages(cls):
-        for food_category in LIST_OF_FOOD_THAT_IS_NOT_BEVERAGE:
+        """Unset products as beverages in the database because they are not.
+        """
+        for food_category in LIST_OF_FOOD_TO_REMOVE_FROM_BEVERAGE:
             categories = (
                 session.query(Category)
                 .filter(Category.category_name.like(f"{food_category}%"))
@@ -260,6 +308,20 @@ class Category(Base):
             for category in categories:
                 category.is_beverage = False
                 category.is_food = True
+            session.commit()
+
+    @classmethod
+    def remove_beverage_categories_from_food(cls):
+        """Unset products as food in the database because they are not.
+        """
+        for beverage_category in LIST_OF_BEVERAGES_TO_REMOVE_FROM_FOOD:
+            categories = (
+                session.query(Category)
+                .filter(Category.category_name.like(f"{beverage_category}%"))
+                .all())
+            for category in categories:
+                category.is_beverage = True
+                category.is_food = False
             session.commit()
 
 
@@ -303,6 +365,7 @@ class Product(Base):
     __tablename__ = 'product'
     id = Column(Integer, primary_key=True)
     product_name = Column(String(PRODUCT_NAME_MAX_LENGTH), nullable=False)
+    main_group = Column(String(PRODUCT_NAME_MAX_LENGTH), nullable=False)
     description = Column(String(DESCRIPTION_MAX_LENGTH), nullable=False)
     nutriscore = Column(String(2), nullable=False)
     ingredients = Column(String(INGREDIENTS_MAX_LENGTH), nullable=False)
@@ -380,8 +443,11 @@ class Product(Base):
             product_name_str = product.get("product_name")
             product_name_str = cls.rename_if_not_exists(product_name_str)
 
+            product_main_group = product.get("pnns_groups_1")
+            product_main_group = cls.rename_if_not_exists(product_main_group)
+
             description_str = product.get("description")
-            description_str = cls.rename_if_not_exists(product_name_str)
+            description_str = cls.rename_if_not_exists(description_str)
 
             url_str = product.get("url")
             url_str = cls.rename_if_not_exists(url_str)
@@ -393,6 +459,7 @@ class Product(Base):
                 # insert product
                 new_product = Product(
                     product_name=product_name_str,
+                    main_group=product_main_group,
                     description=description_str,
                     nutriscore=nutriscore_str,
                     ingredients=ingredients_str,
@@ -484,7 +551,7 @@ class Product(Base):
         return original_prod.all_substitutes
 
     @classmethod
-    def get_categories_from_product(cls, products):
+    def get_categories_from_products(cls, products):
         """Returns the name of the categories of each product for a given
         list of products.
 
@@ -536,14 +603,18 @@ class Product(Base):
 
     @classmethod
     def get_better_prods(cls, product):
-        """[summary]
+        """Get a list of products similar to the one entered as an argument. From
+        the most similar to the least similar and then by order of quality.
+        To do this, we get the products that have the same categories in
+        common.The number of categories in common is the weight of a product.
+        The products are therefore classified from the most important weight to
+        the least important then by nutriscore_grade.
 
         Args:
-            product ([type]): [description]
-            subcategory_name ([type]): [description]
+            product (object): Product for which we want to obtain a similar one
 
         Returns:
-            [type]: [description]
+            List of tuples: List of pairs. One pair is (product, weight).
         """
 
         cats_of_the_chosen_product = product.list_of_categories
@@ -571,6 +642,13 @@ class Product(Base):
 
     @classmethod
     def get_favorites(cls):
+        """Get the list of substitutes for each product then return a list of
+        pairs (product, list of substitutes).
+
+        Returns:
+            List of pairs: A pair is constituted as follows:
+            (product, list of substitutes)
+        """
         try:
             products = session.query(Product).all()
             pairs__original_vs_substitute = []
@@ -587,12 +665,18 @@ class Product(Base):
 
     @classmethod
     def delete_fav_substitute(cls, original, substitute):
+        """Delete a product from a list of substitutes
+
+        Args:
+            original (object): The original product for which we want to remove
+            a substitute.
+            substitute (object): The substitute we want to remove from the list
+        """
         try:
             products = (
                 session.query(Product)
                 .filter(Product.product_name == original.product_name)
                 .all())
-                # .one_or_none())
 
             for product in products:
                 if substitute in product.all_substitutes:
@@ -607,3 +691,15 @@ class Product(Base):
             ******************************************
             {str(e)}""")
             sys.exit(ic())
+
+    @classmethod
+    def only_food_list(cls):
+        """Return a list of products that are not beverages
+
+        Returns:
+            list of objects: products that are not beverages
+        """
+        return (
+            session.query(Product)
+            .filter(Product.main_group != EN_BEVERAGES)
+            .all())

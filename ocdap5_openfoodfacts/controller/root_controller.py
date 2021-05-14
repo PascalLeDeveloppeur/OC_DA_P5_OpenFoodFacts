@@ -38,6 +38,7 @@ class RootController:
         self.__rough_products = []
 
     def analyze(self, controller, page_nbr, choice):
+        """analyse events on the root branch"""
         if page_nbr == CREATE_DB_PAGE:
             if choice == 1:
                 try:
@@ -83,10 +84,12 @@ class RootController:
                     logger.info(" - Tables d'associations remplies.")
                     logger.info("Récupération des sous-catégories"
                                 + "de [Boissons] et [Aliments] en cours...")
-                    Category.extract_beverage_subcategories(controller)
+                    Category.set_beverage_subcategories(controller)
+                    Category.set_food_subcategories(controller)
 
                     Category.set_beverages_that_are_food_too()
                     Category.remove_food_categories_from_beverages()
+                    Category.remove_beverage_categories_from_food()
 
                     controller.set_beverages_subcategories(
                         Category.get_beverages_list())

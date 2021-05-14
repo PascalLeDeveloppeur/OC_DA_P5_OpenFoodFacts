@@ -8,68 +8,18 @@ from icecream import ic
 
 from constants import (
     BAD_CATEGORIES,
-    BRANDS,
     BRAND_NAME_MAX_LENGTH,
-    CATEGORIES,
-    CATEGORIES_TO_BE_DELETED,
     CATEGORY_NAME_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     INGREDIENTS_MAX_LENGTH,
-    MINIMAL_CATEGORY_LENGTH,
-    NBR_OF_FIELDS_BY_PRODUCT,
     NON_FRENCH_LETTERS,
-    PRODUCT,
     PRODUCT_NAME_MAX_LENGTH,
-    STORES,
     STORE_NAME_MAX_LENGTH)
 
 
 class DataFormatter:
-    """Formats the data that will be put into the database."""
-
-    def filter_data(self, rough_products):
-        """
-Removal of non-compliant products.
-        """
-
-        print("Filtrage en cours")
-
-        filtered_products, categories =\
-            self.filter_products_n_get_categories_from_products(rough_products)
-        stores = self.get_stores_from_products(filtered_products)
-
-        return filtered_products, categories, stores
-
-    def filter_products_n_get_categories_from_products(self, rough_products):
-        """Get categories from products that have been received from
-        Open Food Facts"""
-        prefiltered_products = []
-        categories_set = set()
-        for rough_product in rough_products:
-            if len(rough_product) == NBR_OF_FIELDS_BY_PRODUCT:
-                categories_str = rough_product.get('categories')
-
-                categories_to_add = categories_str.split(",")
-                rough_product['categories'] = categories_to_add
-                for category in categories_to_add:
-                    category = category.strip(" ,")
-                    if category and len(category) >= MINIMAL_CATEGORY_LENGTH:
-                        if len(category) > CATEGORY_NAME_MAX_LENGTH:
-                            category = category[:CATEGORY_NAME_MAX_LENGTH]
-                        category = self.remove_unwanted_category(category)
-                        if category:
-                            categories_set.add(category)
-
-                prefiltered_products.append(rough_product)
-
-        # Remove unwanted categories
-        categories_list = list(categories_set)
-        for category in categories_set:
-            for unwanted_category in CATEGORIES_TO_BE_DELETED:
-                if category == unwanted_category:
-                    categories_list.remove(category)
-        categories_set = set(categories_list)
-        return prefiltered_products, categories_set
+    """Formats the data that will be put into the database of the
+    application."""
 
     def prefilter_products(self, products):
         """
@@ -80,6 +30,7 @@ Fr: Supprime les produits qui n'ont pas tous les champs requis."""
         for product in products:
             product = self.check_if_required_fields_in_product(product)
             product = self.delete_foreign_product(product)
+            product = self.delete_prod_with_unknown_pnns_group_1(product)
             if product:
                 in_conformity_products.append(product)
         return in_conformity_products
@@ -95,14 +46,16 @@ Fr: Supprime les produits qui n'ont pas tous les champs requis."""
             object or nothing: The product entered in argument if it has all
             the required fields otherwise return nothing.
         """
-        if (not product.get("categories")
-                or not product.get("brands")
-                or not product.get("product_name")
-                or not product.get("generic_name_fr")
-                or not product.get("url")
-                or not product.get("nutriscore_grade")):
-            return
-        return product
+        if (
+                product.get('brands')
+                and product.get('categories')
+                and product.get("generic_name_fr")
+                and product.get("nutriscore_grade")
+                and product.get("pnns_groups_1")
+                and product.get("product_name")
+                and product.get("url")):
+            return product
+        return
 
     def delete_foreign_product(self, product):
         """Return the product entered in argument if it does not contain a non-french
@@ -114,14 +67,30 @@ Fr: Supprime les produits qui n'ont pas tous les champs requis."""
 
         Returns:
             object or nothing: The product entered in argument if it is not
-            detected as a foreign product otherwise return
-            nothing.
+            detected as a foreign product otherwise return nothing.
         """
         if product:
             for foreign_letter in NON_FRENCH_LETTERS:
                 if foreign_letter in str(product.get("ingredients", "")):
                     return
             return product
+
+    def delete_prod_with_unknown_pnns_group_1(self, product):
+        """Return the product entered in argument if the "pnns_groups_1" key
+        is not unknown otherwise return None.
+
+        Args:
+            product (object): Product to get verified
+
+        Returns:
+            object or None: The product entered in argument if the
+            "pnns_groups_1" key is not unknown otherwise return None.
+        """
+        if product:
+            if len(product.get("pnns_groups_1")) > 2:
+                return (
+                    None if product.get("pnns_groups_1").lower() == "unknown"
+                    else product)
 
     def format_products(self, controller, products):
         """
@@ -136,9 +105,12 @@ Fr: Formate les produits de façon à optimiser leur exploitation."""
             if product:
 
                 product["product_name"] = self.format_element(
-                                        controller,
-                                        product["product_name"],
-                                        PRODUCT)[:PRODUCT_NAME_MAX_LENGTH]
+                    controller,
+                    product["product_name"])[:PRODUCT_NAME_MAX_LENGTH]
+
+                product["pnns_groups_1"] = self.format_element(
+                    controller,
+                    product["pnns_groups_1"])[:PRODUCT_NAME_MAX_LENGTH]
 
                 product["description"] = (
                     product["generic_name_fr"][:DESCRIPTION_MAX_LENGTH])
@@ -160,6 +132,7 @@ Fr: Formate les produits de façon à optimiser leur exploitation."""
                                 product["stores"],
                                 stores,
                                 STORE_NAME_MAX_LENGTH)
+        categories = set(self.verify_categories(categories))
 
         return brands, categories, products, stores
 
@@ -175,19 +148,16 @@ Fr: Reformate les différentes listes de chaque produit."""
             product["categories"] = self.str_to_list(
                 controller,
                 product["categories"],
-                CATEGORIES,
                 CATEGORY_NAME_MAX_LENGTH)
 
             product["stores"] = self.str_to_list(
                 controller,
                 product["stores"],
-                STORES,
                 STORE_NAME_MAX_LENGTH)
 
             product["brands"] = self.str_to_list(
                 controller,
                 product["brands"],
-                BRANDS,
                 BRAND_NAME_MAX_LENGTH)
 
             return product
@@ -196,7 +166,6 @@ Fr: Reformate les différentes listes de chaque produit."""
     def str_to_list(self,
                     controller,
                     data_str,
-                    data_name,
                     max_length_of_element_in_data):
         """
 En: Transforms a list that is in string form into a standard list structure.
@@ -211,7 +180,7 @@ standard.
         data_list = data_str.split(",")
         for element in data_list:
             element = element.strip(" ,")[:max_length_of_element_in_data]
-            element = self.format_element(controller, element, data_name)
+            element = self.format_element(controller, element)
 
             filtered_data_list.append(element)
 
@@ -220,7 +189,7 @@ standard.
 
         return filtered_data_list
 
-    def format_element(self, controller, element, data_name):
+    def format_element(self, controller, element):
         """
 En: Format the name of the element.
 Fr: Formate le nom de l'élément."""
@@ -290,3 +259,15 @@ Fr: Formate puis ajoute chaque élément au set."""
             if category.startswith(bad_category):
                 return
         return category
+
+    def verify_categories(self, categories):
+        """Remove unwanted categories from the list of categories
+
+        Args:
+            categories (list of strings): List of unfiltered categories
+
+        Returns:
+            list of strings: Filtered categories
+        """
+        return [self.remove_unwanted_category(category)
+                for category in categories]

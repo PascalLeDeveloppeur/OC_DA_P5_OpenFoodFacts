@@ -15,6 +15,7 @@ class TrunkController:
     """analyse events on the main branch"""
 
     def analyze(self, controller, page_nbr, choice):
+        """analyse events on the main branch"""
         if page_nbr == HOME_PAGE:
             if choice == 1:
                 controller.set_next_page_nbr(SUBSTITUTE_A_BEVERAGE_PAGE)

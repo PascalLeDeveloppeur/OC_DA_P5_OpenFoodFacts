@@ -184,8 +184,7 @@ class Controller:
         self.__router.go_to(self)
 
     def go_to_previous_page(self):
-        """Go to the previous page via the router.
-        """
+        """Go to the previous page via the router."""
         self.__next_page_nbr = self.__next_page_nbr - 1
         self.__router.go_to(self)
 
@@ -307,7 +306,7 @@ class Controller:
         Then call the view which in turn will call the view that will display
         the page when the user wants to get a product which is a food.
         """
-        self.memory['list_of_products'] = list(
+        self.memory["list_of_products"] = list(
             Product.get_products_from_subcategory(
                 FOOD,
                 self.memory["subcategory_name"]))
@@ -323,7 +322,7 @@ class Controller:
         display the page when the user wants to get a product which is a
         beverage.
         """
-        self.memory['list_of_products'] = list(
+        self.memory["list_of_products"] = list(
             Product.get_products_from_subcategory(
                 BEVERAGES,
                 self.memory["subcategory_name"]))

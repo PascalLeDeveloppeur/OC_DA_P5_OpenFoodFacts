@@ -21,20 +21,20 @@ class DataDownloader:
     def download(self):
         rough_products = []
         url = "https://fr.openfoodfacts.org/cgi/search.pl"
-        # for page_nbr in range(NBR_OF_PAGES):
-        #     params = {
-        #         "action": "process",
-        #         "sort_by": "unique_scan_n",
-        #         "search_terms": "aliments",
-        #         "fields": WANTED_FIELDS_OF_A_PRODUCT,
-        #         "page_size": f"{PRODUCTS_PER_PAGE}",
-        #         "json": "1",
-        #         "page": f"{page_nbr + 1}"}
+        for page_nbr in range(NBR_OF_PAGES):
+            params = {
+                "action": "process",
+                "sort_by": "unique_scan_n",
+                "search_terms": "aliments",
+                "fields": WANTED_FIELDS_OF_A_PRODUCT,
+                "page_size": f"{PRODUCTS_PER_PAGE}",
+                "json": "1",
+                "page": f"{page_nbr + 1}"}
 
-        #     response = requests.get(url, params=params)
-        #     rough_data = response.json()
-        #     rough_products += rough_data.get('products')
-            
+            response = requests.get(url, params=params)
+            rough_data = response.json()
+            rough_products += rough_data.get('products')
+
         for page_nbr in range(NBR_OF_PAGES):
             params = {
                 "action": "process",

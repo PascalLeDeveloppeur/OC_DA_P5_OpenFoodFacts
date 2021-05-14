@@ -1,112 +1,145 @@
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
 -- -----------------------------------------------------
 -- Schema OCP5
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema OCP5
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `OCP5` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `OCP5` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 USE `OCP5` ;
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_product`
+-- Table `OCP5`.`brand`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_product` (
+CREATE TABLE IF NOT EXISTS `OCP5`.`brand` (
+  `brand_id` INT NOT NULL AUTO_INCREMENT,
+  `brand_name` VARCHAR(25) NOT NULL,
+  PRIMARY KEY (`brand_id`),
+  UNIQUE INDEX `brand_name` (`brand_name` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1091
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `OCP5`.`category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `OCP5`.`category` (
+  `category_id` INT NOT NULL AUTO_INCREMENT,
+  `category_name` VARCHAR(45) NOT NULL,
+  `is_beverage` TINYINT(1) NULL DEFAULT NULL,
+  `is_food` TINYINT(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`category_id`),
+  UNIQUE INDEX `category_name` (`category_name` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1731
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `OCP5`.`product`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `OCP5`.`product` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `product_name` VARCHAR(45) NULL,
-  `nutri_score` VARCHAR(2) NULL,
-  `ingredients` VARCHAR(200) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
+  `product_name` VARCHAR(55) NOT NULL,
+  `main_group` VARCHAR(55) NOT NULL,
+  `description` VARCHAR(170) NOT NULL,
+  `nutriscore` VARCHAR(2) NOT NULL,
+  `ingredients` VARCHAR(300) NOT NULL,
+  `url` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5900
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_category`
+-- Table `OCP5`.`l_brand_product`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_category` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `category_name` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `OCP5`.`P5_category_has_product`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_category_has_product` (
-  `FK_category_id` INT NOT NULL,
-  `FK_product_id` INT NOT NULL,
-  PRIMARY KEY (`FK_category_id`, `FK_product_id`),
-  INDEX `fk_P5_category_has_P5_products_P5_products1_idx` (`FK_product_id` ASC) VISIBLE,
-  INDEX `fk_P5_category_has_P5_products_P5_category_idx` (`FK_category_id` ASC) VISIBLE,
-  CONSTRAINT `fk_P5_category_has_P5_products_P5_category`
-    FOREIGN KEY (`FK_category_id`)
-    REFERENCES `mydb`.`P5_category` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_P5_category_has_P5_products_P5_products1`
-    FOREIGN KEY (`FK_product_id`)
-    REFERENCES `mydb`.`P5_product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `OCP5`.`l_brand_product` (
+  `fk_product_id` INT NULL DEFAULT NULL,
+  `fk_brand_id` INT NULL DEFAULT NULL,
+  INDEX `fk_product_id` (`fk_product_id` ASC) VISIBLE,
+  INDEX `fk_brand_id` (`fk_brand_id` ASC) VISIBLE,
+  CONSTRAINT `l_brand_product_ibfk_1`
+    FOREIGN KEY (`fk_product_id`)
+    REFERENCES `OCP5`.`product` (`id`),
+  CONSTRAINT `l_brand_product_ibfk_2`
+    FOREIGN KEY (`fk_brand_id`)
+    REFERENCES `OCP5`.`brand` (`brand_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_store`
+-- Table `OCP5`.`l_category_product`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_store` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `store_name` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `OCP5`.`P5_store_has_product`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_store_has_product` (
-  `P5_products_id` INT NOT NULL,
-  `P5_store_id` INT NOT NULL,
-  PRIMARY KEY (`P5_products_id`, `P5_store_id`),
-  INDEX `fk_P5_products_has_P5_store_P5_store1_idx` (`P5_store_id` ASC) VISIBLE,
-  INDEX `fk_P5_products_has_P5_store_P5_products1_idx` (`P5_products_id` ASC) VISIBLE,
-  CONSTRAINT `fk_P5_products_has_P5_store_P5_products1`
-    FOREIGN KEY (`P5_products_id`)
-    REFERENCES `mydb`.`P5_product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_P5_products_has_P5_store_P5_store1`
-    FOREIGN KEY (`P5_store_id`)
-    REFERENCES `mydb`.`P5_store` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `OCP5`.`l_category_product` (
+  `fk_product_id` INT NULL DEFAULT NULL,
+  `fk_category_id` INT NULL DEFAULT NULL,
+  INDEX `fk_product_id` (`fk_product_id` ASC) VISIBLE,
+  INDEX `fk_category_id` (`fk_category_id` ASC) VISIBLE,
+  CONSTRAINT `l_category_product_ibfk_1`
+    FOREIGN KEY (`fk_product_id`)
+    REFERENCES `OCP5`.`product` (`id`),
+  CONSTRAINT `l_category_product_ibfk_2`
+    FOREIGN KEY (`fk_category_id`)
+    REFERENCES `OCP5`.`category` (`category_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `OCP5`.`P5_favorite`
+-- Table `OCP5`.`l_original_substitute`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `OCP5`.`P5_favorite` (
-  `P5_product_id` INT NOT NULL,
-  PRIMARY KEY (`P5_product_id`),
-  CONSTRAINT `fk_favorite_P5_product1`
-    FOREIGN KEY (`P5_product_id`)
-    REFERENCES `mydb`.`P5_product` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `OCP5`.`l_original_substitute` (
+  `favorite_id` INT NOT NULL AUTO_INCREMENT,
+  `original_prod_id` INT NULL DEFAULT NULL,
+  `substitute_prod_id` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`favorite_id`),
+  INDEX `original_prod_id` (`original_prod_id` ASC) VISIBLE,
+  INDEX `substitute_prod_id` (`substitute_prod_id` ASC) VISIBLE,
+  CONSTRAINT `l_original_substitute_ibfk_1`
+    FOREIGN KEY (`original_prod_id`)
+    REFERENCES `OCP5`.`product` (`id`),
+  CONSTRAINT `l_original_substitute_ibfk_2`
+    FOREIGN KEY (`substitute_prod_id`)
+    REFERENCES `OCP5`.`product` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- -----------------------------------------------------
+-- Table `OCP5`.`store`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `OCP5`.`store` (
+  `store_id` INT NOT NULL AUTO_INCREMENT,
+  `store_name` VARCHAR(35) NOT NULL,
+  PRIMARY KEY (`store_id`),
+  UNIQUE INDEX `store_name` (`store_name` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 310
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `OCP5`.`l_product_store`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `OCP5`.`l_product_store` (
+  `fk_product_id` INT NULL DEFAULT NULL,
+  `fk_store_id` INT NULL DEFAULT NULL,
+  INDEX `fk_product_id` (`fk_product_id` ASC) VISIBLE,
+  INDEX `fk_store_id` (`fk_store_id` ASC) VISIBLE,
+  CONSTRAINT `l_product_store_ibfk_1`
+    FOREIGN KEY (`fk_product_id`)
+    REFERENCES `OCP5`.`product` (`id`),
+  CONSTRAINT `l_product_store_ibfk_2`
+    FOREIGN KEY (`fk_store_id`)
+    REFERENCES `OCP5`.`store` (`store_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+

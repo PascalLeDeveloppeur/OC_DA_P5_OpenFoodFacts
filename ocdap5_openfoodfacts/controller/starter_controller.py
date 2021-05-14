@@ -12,6 +12,7 @@ class StarterController:
     """analyse events on the starter branch"""
 
     def analyze(self, controller, page_nbr, choice, **kwargs):
+        """analyse events on the starter branch"""
         if page_nbr == INITIAL_PAGE:
             if choice == 1:
                 controller.set_next_page_nbr(CREATE_DB_PAGE)

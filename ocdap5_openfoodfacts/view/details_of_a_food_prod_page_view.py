@@ -5,6 +5,7 @@ import traceback
 
 from logger import logger
 from constants import (
+    CHOICE_ERROR,
     ERROR_COLOR,
     DETAILS_OF_A_FOOD_PROD_PAGE,
     PRODUCT_DETAILS,
@@ -13,8 +14,6 @@ from constants import (
 
 class DetailsOfAFoodProdPageView:
     """Display the page of the details of a product which is a food"""
-
-    
 
     def show(
             memory,
@@ -33,6 +32,8 @@ class DetailsOfAFoodProdPageView:
         print(" | Nutriscore: ", product.nutriscore, end=" | Marque: ")
         # Below, str form is possible because of __repr__ in Product class
         print(product.list_of_brands)
+        print()
+        print("Description: ", product.description)
         print()
         print("Ingrédients: ", product.ingredients)
         print()
@@ -58,6 +59,12 @@ Que souhaitez-vous faire ?
                 SUBSTITUTE,
                 DETAILS_OF_A_FOOD_PROD_PAGE,
                 choice,)
+
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                DETAILS_OF_A_FOOD_PROD_PAGE,
+                CHOICE_ERROR,)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""

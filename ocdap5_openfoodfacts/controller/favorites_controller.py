@@ -10,7 +10,8 @@ from constants import (
 class FavoritesController:
     """analyse events on the favorites branch"""
 
-    def analyze(self, controller, page_nbr, choice, **kwargs):
+    def analyze(self, controller, page_nbr, choice):
+        """analyse events on the favorites branch"""
         if page_nbr == FAVORITES_PAGE:
             controller.manage_menu_header(choice)
             if choice >= INDEX_OF_FIRST_PROD:

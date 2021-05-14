@@ -29,14 +29,23 @@ class FavoritesMainPageView:
             f"""
 Souhaitez-vous naviguer ?
 {menu_header}
-Ou modifier une paire (original vs favori) ?
 """)
         pairs = memory["list_of_pairs__original_v_substitutes"]
+        if pairs:
+            print("Ou modifier une paire (original vs favori ?")
+        else:
+            print("Il n'y a pas encore de produit favori")
+            print()
+            print("Votre choix ?")
 
+        # Set last_index to INDEX_OF_FIRST_PROD in order to
+        # avoid error if there is no pairs
+        last_index = INDEX_OF_FIRST_PROD  # ()
         for i, one_pair in enumerate(pairs):
 
             print()
-            print(f"[{i + INDEX_OF_FIRST_PROD}] ")
+            last_index = i + INDEX_OF_FIRST_PROD
+            print(f"[{last_index}] ")
             print(one_pair[0], end=" ")
             print(f"marque: {one_pair[0].list_of_brands}")
 
@@ -48,7 +57,7 @@ Ou modifier une paire (original vs favori) ?
         try:
             choice = int(choice)
 
-            if choice > i + INDEX_OF_FIRST_PROD:
+            if choice > last_index:
                 choice = CHOICE_ERROR
 
             event_handler(

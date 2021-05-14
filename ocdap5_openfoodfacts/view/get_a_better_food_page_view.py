@@ -6,6 +6,7 @@ import traceback
 from logger import logger
 from constants import (
     BETTER_FOOD,
+    CHOICE_ERROR,
     ERROR_COLOR,
     GET_A_BETTER_FOOD_PAGE,
     INDEX_OF_FIRST_PROD,
@@ -14,8 +15,6 @@ from constants import (
 
 class GetABetterFoodPageView:
     """Display the page that list the best substitute food"""
-
-    
 
     def show(self,
              memory,
@@ -63,6 +62,17 @@ class GetABetterFoodPageView:
                 SUBSTITUTE,
                 GET_A_BETTER_FOOD_PAGE,
                 choice,)
+
+        except IndexError:
+            event_handler(
+                SUBSTITUTE,
+                GET_A_BETTER_FOOD_PAGE,
+                CHOICE_ERROR)
+        except ValueError:
+            event_handler(
+                SUBSTITUTE,
+                GET_A_BETTER_FOOD_PAGE,
+                CHOICE_ERROR)
         except Exception as e:
             e_traceback = traceback.format_exc()
             logger.error(f"""
